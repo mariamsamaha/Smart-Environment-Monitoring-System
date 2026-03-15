@@ -1,53 +1,52 @@
 [
     {
-        "id": "384592f97b4199b4",
+        "id": "flow1",
         "type": "tab",
-        "label": "Flow 2",
+        "label": "Smart Environment",
         "disabled": false,
         "info": "",
         "env": []
     },
     {
-        "id": "83c4bf28bb42033d",
+        "id": "mi_temp",
         "type": "mqtt in",
-        "z": "384592f97b4199b4",
+        "z": "flow1",
         "name": "sub temperature",
         "topic": "sensors/temperature",
         "qos": "0",
         "datatype": "utf8",
-        "broker": "mqtt_broker_cfg",
+        "broker": "broker1",
         "inputs": 0,
-        "x": 420,
+        "x": 100,
         "y": 80,
         "wires": [
             [
-                "e32916a23d248cab"
+                "fn_temp"
             ]
         ]
     },
     {
-        "id": "e32916a23d248cab",
+        "id": "fn_temp",
         "type": "function",
-        "z": "384592f97b4199b4",
+        "z": "flow1",
         "name": "Parse Temp",
-        "func": "var d = JSON.parse(msg.payload);\nglobal.set('last_temp', d.value);\nmsg.payload = d.value;\nmsg.topic = 'Temperature';\nreturn msg;",
+        "func": "try {\n    var d = JSON.parse(msg.payload);\n    var v = parseFloat(d.value);\n    if (isNaN(v)) return null;\n    global.set('last_temp', v);\n    msg.payload = v;\n    msg.topic = 'Temperature';\n    return msg;\n} catch(e) { return null; }",
         "outputs": 1,
-        "x": 620,
+        "x": 300,
         "y": 80,
         "wires": [
             [
-                "086d374b24bd65a3",
-                "5607825754bdc572",
-                "0132bc64103b420d"
+                "chart_live",
+                "fn_temp_check"
             ]
         ]
     },
     {
-        "id": "086d374b24bd65a3",
+        "id": "gauge_temp",
         "type": "ui_gauge",
-        "z": "384592f97b4199b4",
+        "z": "flow1",
         "name": "Temperature",
-        "group": "grp_gauges",
+        "group": "grp_sensors",
         "order": 1,
         "width": "3",
         "height": "3",
@@ -64,68 +63,64 @@
         ],
         "seg1": 25,
         "seg2": 35,
-        "x": 850,
+        "x": 540,
         "y": 60,
         "wires": []
     },
     {
-        "id": "0132bc64103b420d",
+        "id": "fn_temp_check",
         "type": "function",
-        "z": "384592f97b4199b4",
-        "name": "Temp Alert",
-        "func": "var threshold = flow.get('temp_max') || 30;\nif (msg.payload > threshold) {\n  var a = {payload: '🔴 HIGH TEMPERATURE: ' + msg.payload + '°C', topic: new Date().toLocaleTimeString()};\n  return [a, a];\n}\nreturn [null,null];",
-        "outputs": 2,
-        "x": 620,
-        "y": 150,
+        "z": "flow1",
+        "name": "Temp Alert Check",
+        "func": "var thr = global.get('thr_temp') || 30;\nif (msg.payload > thr) {\n    msg.payload = '🔴 HIGH TEMPERATURE: ' + msg.payload.toFixed(1) + '°C';\n    msg.topic = new Date().toLocaleTimeString();\n    return msg;\n}\nreturn null;",
+        "outputs": 1,
+        "x": 540,
+        "y": 100,
         "wires": [
             [
-                "d7d4ec1451fc250a"
-            ],
-            [
-                "f701a02fbccef51b"
+                "fn_alert_handler"
             ]
         ]
     },
     {
-        "id": "460511716e91cf6d",
+        "id": "mi_hum",
         "type": "mqtt in",
-        "z": "384592f97b4199b4",
+        "z": "flow1",
         "name": "sub humidity",
         "topic": "sensors/humidity",
         "qos": "0",
         "datatype": "utf8",
-        "broker": "mqtt_broker_cfg",
+        "broker": "broker1",
         "inputs": 0,
-        "x": 420,
-        "y": 220,
+        "x": 100,
+        "y": 180,
         "wires": [
             [
-                "e659f13d99e01e0b"
+                "fn_hum"
             ]
         ]
     },
     {
-        "id": "e659f13d99e01e0b",
+        "id": "fn_hum",
         "type": "function",
-        "z": "384592f97b4199b4",
+        "z": "flow1",
         "name": "Parse Hum",
-        "func": "var d = JSON.parse(msg.payload);\nglobal.set('last_hum', d.value);\nmsg.payload = d.value;\nmsg.topic = 'Humidity';\nreturn msg;",
+        "func": "try {\n    var d = JSON.parse(msg.payload);\n    var v = parseFloat(d.value);\n    if (isNaN(v)) return null;\n    global.set('last_hum', v);\n    msg.payload = v;\n    msg.topic = 'Humidity';\n    return msg;\n} catch(e) { return null; }",
         "outputs": 1,
-        "x": 620,
-        "y": 220,
+        "x": 300,
+        "y": 180,
         "wires": [
             [
-                "ddf5fd6f82c929b0",
-                "5607825754bdc572"
+                "chart_live"
             ]
         ]
     },
     {
-        "id": "ddf5fd6f82c929b0",
+        "id": "gauge_hum",
         "type": "ui_gauge",
-        "z": "384592f97b4199b4",
+        "z": "flow1",
         "name": "Humidity",
-        "group": "grp_gauges",
+        "group": "grp_sensors",
         "order": 2,
         "width": "3",
         "height": "3",
@@ -142,14 +137,214 @@
         ],
         "seg1": 30,
         "seg2": 60,
-        "x": 850,
-        "y": 220,
+        "x": 540,
+        "y": 180,
         "wires": []
     },
     {
-        "id": "5607825754bdc572",
+        "id": "mi_light",
+        "type": "mqtt in",
+        "z": "flow1",
+        "name": "sub light",
+        "topic": "sensors/light",
+        "qos": "0",
+        "datatype": "utf8",
+        "broker": "broker1",
+        "inputs": 0,
+        "x": 100,
+        "y": 280,
+        "wires": [
+            [
+                "fn_light"
+            ]
+        ]
+    },
+    {
+        "id": "fn_light",
+        "type": "function",
+        "z": "flow1",
+        "name": "Parse Light",
+        "func": "try {\n    var d = JSON.parse(msg.payload);\n    var v = parseInt(d.value);\n    if (isNaN(v)) return null;\n    global.set('last_light', v);\n    msg.payload = v;\n    return msg;\n} catch(e) { return null; }",
+        "outputs": 1,
+        "x": 300,
+        "y": 280,
+        "wires": [
+            [
+                "fn_light_check"
+            ]
+        ]
+    },
+    {
+        "id": "gauge_light",
+        "type": "ui_gauge",
+        "z": "flow1",
+        "name": "Light Level",
+        "group": "grp_sensors",
+        "order": 3,
+        "width": "3",
+        "height": "3",
+        "gtype": "gage",
+        "title": "Light Level",
+        "label": "raw",
+        "format": "{{value}}",
+        "min": 0,
+        "max": 4095,
+        "colors": [
+            "#1a237e",
+            "#e6e600",
+            "#ffff00"
+        ],
+        "seg1": 500,
+        "seg2": 2000,
+        "x": 540,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "fn_light_check",
+        "type": "function",
+        "z": "flow1",
+        "name": "Light Alert Check",
+        "func": "var thr = global.get('thr_light') || 2000;\nif (msg.payload < thr) {\n    msg.payload = '🌑 LOW LIGHT: ' + msg.payload;\n    msg.topic = new Date().toLocaleTimeString();\n    return msg;\n}\nreturn null;",
+        "outputs": 1,
+        "x": 540,
+        "y": 300,
+        "wires": [
+            [
+                "fn_alert_handler"
+            ]
+        ]
+    },
+    {
+        "id": "mi_motion",
+        "type": "mqtt in",
+        "z": "flow1",
+        "name": "sub motion",
+        "topic": "sensors/motion",
+        "qos": "0",
+        "datatype": "utf8",
+        "broker": "broker1",
+        "inputs": 0,
+        "x": 100,
+        "y": 380,
+        "wires": [
+            [
+                "fn_motion"
+            ]
+        ]
+    },
+    {
+        "id": "fn_motion",
+        "type": "function",
+        "z": "flow1",
+        "name": "Parse Motion",
+        "func": "try {\n    var d = JSON.parse(msg.payload);\n    global.set('last_motion', d.detected);\n    if (d.detected) {\n        node.send([\n            {payload: '🚨 Motion Detected'},\n            {payload: '🚨 MOTION DETECTED', topic: new Date().toLocaleTimeString()}\n        ]);\n    } else {\n        node.send([{payload: '✅ No Motion'}, null]);\n    }\n} catch(e) {}",
+        "outputs": 2,
+        "x": 300,
+        "y": 380,
+        "wires": [
+            [
+                "txt_motion"
+            ],
+            [
+                "fn_alert_handler"
+            ]
+        ]
+    },
+    {
+        "id": "txt_motion",
+        "type": "ui_text",
+        "z": "flow1",
+        "group": "grp_sensors",
+        "order": 4,
+        "width": "3",
+        "height": "3",
+        "name": "Motion",
+        "label": "Motion",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "x": 540,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "mi_dist",
+        "type": "mqtt in",
+        "z": "flow1",
+        "name": "sub distance",
+        "topic": "sensors/distance",
+        "qos": "0",
+        "datatype": "utf8",
+        "broker": "broker1",
+        "inputs": 0,
+        "x": 100,
+        "y": 480,
+        "wires": [
+            [
+                "fn_dist"
+            ]
+        ]
+    },
+    {
+        "id": "fn_dist",
+        "type": "function",
+        "z": "flow1",
+        "name": "Parse Distance",
+        "func": "try {\n    var d = JSON.parse(msg.payload);\n    var v = parseFloat(d.value);\n    if (isNaN(v)) return null;\n    global.set('last_dist', v);\n    msg.payload = v;\n    return msg;\n} catch(e) { return null; }",
+        "outputs": 1,
+        "x": 300,
+        "y": 480,
+        "wires": [
+            [
+                "fn_dist_check"
+            ]
+        ]
+    },
+    {
+        "id": "gauge_dist",
+        "type": "ui_gauge",
+        "z": "flow1",
+        "name": "Distance",
+        "group": "grp_sensors",
+        "order": 5,
+        "width": "3",
+        "height": "3",
+        "gtype": "gage",
+        "title": "Distance",
+        "label": "cm",
+        "format": "{{value}} cm",
+        "min": 0,
+        "max": 200,
+        "colors": [
+            "#ca3505",
+            "#e6e600",
+            "#00b500"
+        ],
+        "seg1": 20,
+        "seg2": 60,
+        "x": 540,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "fn_dist_check",
+        "type": "function",
+        "z": "flow1",
+        "name": "Distance Alert Check",
+        "func": "var thr = global.get('thr_dist') || 20;\nif (msg.payload < thr) {\n    msg.payload = '⚠️ OBJECT TOO CLOSE: ' + msg.payload.toFixed(1) + ' cm';\n    msg.topic = new Date().toLocaleTimeString();\n    return msg;\n}\nreturn null;",
+        "outputs": 1,
+        "x": 540,
+        "y": 500,
+        "wires": [
+            [
+                "fn_alert_handler"
+            ]
+        ]
+    },
+    {
+        "id": "chart_live",
         "type": "ui_chart",
-        "z": "384592f97b4199b4",
+        "z": "flow1",
         "name": "Temp & Hum Chart",
         "group": "grp_chart",
         "order": 1,
@@ -172,341 +367,37 @@
             "#3498db"
         ],
         "outputs": 1,
-        "x": 850,
-        "y": 150,
+        "x": 540,
+        "y": 220,
         "wires": [
             []
         ]
     },
     {
-        "id": "bdb88a381fb96352",
-        "type": "mqtt in",
-        "z": "384592f97b4199b4",
-        "name": "sub light",
-        "topic": "sensors/light",
-        "qos": "0",
-        "datatype": "utf8",
-        "broker": "mqtt_broker_cfg",
-        "inputs": 0,
-        "x": 420,
-        "y": 340,
-        "wires": [
-            [
-                "8c6b7d669f572b9e"
-            ]
-        ]
-    },
-    {
-        "id": "8c6b7d669f572b9e",
+        "id": "fn_alert_handler",
         "type": "function",
-        "z": "384592f97b4199b4",
-        "name": "Parse Light",
-        "func": "var d = JSON.parse(msg.payload);\nglobal.set('last_light', d.value);\nmsg.payload = d.value;\nreturn msg;",
-        "outputs": 1,
-        "x": 620,
-        "y": 340,
-        "wires": [
-            [
-                "bd88e6e706f8fff1",
-                "a5c961bfd49283f0"
-            ]
-        ]
-    },
-    {
-        "id": "bd88e6e706f8fff1",
-        "type": "ui_gauge",
-        "z": "384592f97b4199b4",
-        "name": "Light Level",
-        "group": "grp_gauges",
-        "order": 3,
-        "width": "3",
-        "height": "3",
-        "gtype": "gage",
-        "title": "Light Level",
-        "label": "raw",
-        "format": "{{value}}",
-        "min": 0,
-        "max": 4095,
-        "colors": [
-            "#1a237e",
-            "#e6e600",
-            "#ffff00"
-        ],
-        "seg1": 500,
-        "seg2": 2000,
-        "x": 850,
-        "y": 320,
-        "wires": []
-    },
-    {
-        "id": "a5c961bfd49283f0",
-        "type": "function",
-        "z": "384592f97b4199b4",
-        "name": "Light Alert",
-        "func": "var threshold = flow.get('light_min') || 2000;\nif (msg.payload < threshold) {\n  var a = {payload: '🌑 LOW LIGHT: ' + msg.payload, topic: new Date().toLocaleTimeString()};\n  return [a, a];\n}\nreturn [null,null];",
-        "outputs": 2,
-        "x": 620,
-        "y": 400,
-        "wires": [
-            [
-                "d7d4ec1451fc250a"
-            ],
-            [
-                "f701a02fbccef51b"
-            ]
-        ]
-    },
-    {
-        "id": "a3f904022ce0d953",
-        "type": "mqtt in",
-        "z": "384592f97b4199b4",
-        "name": "sub motion",
-        "topic": "sensors/motion",
-        "qos": "0",
-        "datatype": "utf8",
-        "broker": "mqtt_broker_cfg",
-        "inputs": 0,
-        "x": 420,
-        "y": 480,
-        "wires": [
-            [
-                "721424eba59e4c3c"
-            ]
-        ]
-    },
-    {
-        "id": "721424eba59e4c3c",
-        "type": "function",
-        "z": "384592f97b4199b4",
-        "name": "Parse Motion",
-        "func": "var d = JSON.parse(msg.payload);\nglobal.set('last_motion', d.detected);\nif (d.detected) {\n  var a = {payload: '🚨 MOTION DETECTED', topic: new Date().toLocaleTimeString()};\n  node.send([{payload:'🚨 Motion Detected'}, a, a]);\n} else {\n  node.send([{payload:'✅ No Motion'}, null, null]);\n}",
+        "z": "flow1",
+        "name": "Alert Handler",
+        "func": "// Send to toast banner\nnode.send([msg, msg, msg]);",
         "outputs": 3,
-        "x": 630,
-        "y": 480,
+        "x": 780,
+        "y": 300,
         "wires": [
             [
-                "8b0ab8edb5bc7992"
+                "ui_toast"
             ],
             [
-                "d7d4ec1451fc250a"
+                "fn_log_alert"
             ],
             [
-                "f701a02fbccef51b"
+                "fn_telegram"
             ]
         ]
     },
     {
-        "id": "8b0ab8edb5bc7992",
-        "type": "ui_text",
-        "z": "384592f97b4199b4",
-        "group": "grp_gauges",
-        "order": 4,
-        "width": "3",
-        "height": "3",
-        "name": "Motion Status",
-        "label": "Motion",
-        "format": "{{msg.payload}}",
-        "layout": "col-center",
-        "x": 850,
-        "y": 460,
-        "wires": []
-    },
-    {
-        "id": "42d562c614d07334",
-        "type": "mqtt in",
-        "z": "384592f97b4199b4",
-        "name": "sub distance",
-        "topic": "sensors/distance",
-        "qos": "0",
-        "datatype": "utf8",
-        "broker": "mqtt_broker_cfg",
-        "inputs": 0,
-        "x": 420,
-        "y": 580,
-        "wires": [
-            [
-                "57564ba99216f03d"
-            ]
-        ]
-    },
-    {
-        "id": "57564ba99216f03d",
-        "type": "function",
-        "z": "384592f97b4199b4",
-        "name": "Parse Distance",
-        "func": "var d = JSON.parse(msg.payload);\nglobal.set('last_dist', d.value);\nmsg.payload = d.value;\nreturn msg;",
-        "outputs": 1,
-        "x": 620,
-        "y": 580,
-        "wires": [
-            [
-                "882c9d8a6d4f1d3b",
-                "b9f7bfaa3f11b905"
-            ]
-        ]
-    },
-    {
-        "id": "882c9d8a6d4f1d3b",
-        "type": "ui_gauge",
-        "z": "384592f97b4199b4",
-        "name": "Distance",
-        "group": "grp_gauges",
-        "order": 5,
-        "width": "3",
-        "height": "3",
-        "gtype": "gage",
-        "title": "Distance",
-        "label": "cm",
-        "format": "{{value}} cm",
-        "min": 0,
-        "max": 200,
-        "colors": [
-            "#ca3505",
-            "#e6e600",
-            "#00b500"
-        ],
-        "seg1": 20,
-        "seg2": 60,
-        "x": 850,
-        "y": 560,
-        "wires": []
-    },
-    {
-        "id": "b9f7bfaa3f11b905",
-        "type": "function",
-        "z": "384592f97b4199b4",
-        "name": "Distance Alert",
-        "func": "var threshold = flow.get('dist_min') || 20;\nif (msg.payload < threshold) {\n  var a = {payload: '⚠️ OBJECT TOO CLOSE: ' + msg.payload + ' cm', topic: new Date().toLocaleTimeString()};\n  return [a, a];\n}\nreturn [null,null];",
-        "outputs": 2,
-        "x": 630,
-        "y": 640,
-        "wires": [
-            [
-                "d7d4ec1451fc250a"
-            ],
-            [
-                "f701a02fbccef51b"
-            ]
-        ]
-    },
-    {
-        "id": "2b512e94e2074f1e",
-        "type": "mqtt in",
-        "z": "384592f97b4199b4",
-        "name": "sub system/status",
-        "topic": "system/status",
-        "qos": "0",
-        "datatype": "utf8",
-        "broker": "mqtt_broker_cfg",
-        "inputs": 0,
-        "x": 430,
-        "y": 740,
-        "wires": [
-            [
-                "0de180325e199c28",
-                "2331a66866b2a77c"
-            ]
-        ]
-    },
-    {
-        "id": "0de180325e199c28",
-        "type": "function",
-        "z": "384592f97b4199b4",
-        "name": "Format Status",
-        "func": "var d = JSON.parse(msg.payload);\nmsg.payload = '⏱ Uptime: ' + d.uptime + 's  |  📶 RSSI: ' + d.rssi + ' dBm  |  🧠 Free Heap: ' + d.free_memory + ' bytes';\nreturn msg;",
-        "outputs": 1,
-        "x": 670,
-        "y": 720,
-        "wires": [
-            [
-                "896cd67ecbd9f6f6"
-            ]
-        ]
-    },
-    {
-        "id": "896cd67ecbd9f6f6",
-        "type": "ui_text",
-        "z": "384592f97b4199b4",
-        "group": "grp_status",
-        "order": 1,
-        "width": "12",
-        "height": "1",
-        "name": "ESP32 Status",
-        "label": "ESP32",
-        "format": "{{msg.payload}}",
-        "layout": "row-spread",
-        "x": 890,
-        "y": 720,
-        "wires": []
-    },
-    {
-        "id": "2331a66866b2a77c",
-        "type": "function",
-        "z": "384592f97b4199b4",
-        "name": "Reset Watchdog",
-        "func": "flow.set('last_heartbeat', Date.now());\nreturn null;",
-        "outputs": 1,
-        "x": 680,
-        "y": 780,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "96c12d20bb59594e",
-        "type": "inject",
-        "z": "384592f97b4199b4",
-        "name": "Check Every 5s",
-        "repeat": "5",
-        "crontab": "",
-        "once": true,
-        "onceDelay": 3,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 440,
-        "y": 840,
-        "wires": [
-            [
-                "80cbdbc9b3be32f9"
-            ]
-        ]
-    },
-    {
-        "id": "80cbdbc9b3be32f9",
-        "type": "function",
-        "z": "384592f97b4199b4",
-        "name": "Watchdog Check",
-        "func": "var last = flow.get('last_heartbeat') || 0;\nvar diff = Date.now() - last;\nif (last === 0) {\n  msg.payload = '⏳ Waiting for ESP32...';\n} else if (diff > 30000) {\n  msg.payload = '❌ ESP32 OFFLINE — No heartbeat for ' + Math.round(diff/1000) + 's';\n} else {\n  msg.payload = '✅ ESP32 Online — Last seen ' + Math.round(diff/1000) + 's ago';\n}\nreturn msg;",
-        "outputs": 1,
-        "x": 660,
-        "y": 840,
-        "wires": [
-            [
-                "348bb20ad91d5e3d"
-            ]
-        ]
-    },
-    {
-        "id": "348bb20ad91d5e3d",
-        "type": "ui_text",
-        "z": "384592f97b4199b4",
-        "group": "grp_status",
-        "order": 2,
-        "width": "12",
-        "height": "1",
-        "name": "Connection Status",
-        "label": "Connection",
-        "format": "{{msg.payload}}",
-        "layout": "row-spread",
-        "x": 900,
-        "y": 840,
-        "wires": []
-    },
-    {
-        "id": "d7d4ec1451fc250a",
+        "id": "ui_toast",
         "type": "ui_toast",
-        "z": "384592f97b4199b4",
+        "z": "flow1",
         "position": "top right",
         "displayTime": "5",
         "highlight": "",
@@ -516,36 +407,31 @@
         "raw": false,
         "topic": "Alert",
         "name": "Alert Banner",
-        "x": 890,
-        "y": 500,
+        "x": 1000,
+        "y": 220,
         "wires": []
     },
     {
-        "id": "f701a02fbccef51b",
+        "id": "fn_log_alert",
         "type": "function",
-        "z": "384592f97b4199b4",
+        "z": "flow1",
         "name": "Log Alert",
-        "func": "var log = global.get('alert_log') || [];\n\nlog.unshift({\n    \"Time\": new Date().toLocaleTimeString(),\n    \"Message\": msg.payload\n});\n\nif (log.length > 50) log = log.slice(0, 50);\nglobal.set('alert_log', log);\n\nmsg.payload = log;\nreturn msg;",
+        "func": "var log = global.get('alert_log') || [];\nlog.unshift({Time: msg.topic || new Date().toLocaleTimeString(), Message: msg.payload});\nif (log.length > 50) log = log.slice(0, 50);\nglobal.set('alert_log', log);\nmsg.payload = log;\nreturn msg;",
         "outputs": 1,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 1060,
-        "y": 660,
+        "x": 1000,
+        "y": 300,
         "wires": [
             [
-                "2dcd211f285ea8b0"
+                "ui_alert_table"
             ]
         ]
     },
     {
-        "id": "2dcd211f285ea8b0",
+        "id": "ui_alert_table",
         "type": "ui_table",
-        "z": "384592f97b4199b4",
-        "group": "grp_alertlog",
-        "name": "Alert Log",
+        "z": "flow1",
+        "group": "grp_alert",
+        "name": "Alert History",
         "order": 1,
         "width": "12",
         "height": "8",
@@ -553,7 +439,7 @@
             {
                 "field": "Time",
                 "title": "Time",
-                "width": "120",
+                "width": "150",
                 "align": "left",
                 "formatter": "plaintext",
                 "formatterParams": {
@@ -573,15 +459,177 @@
         ],
         "outputs": 0,
         "cts": false,
-        "x": 1080,
-        "y": 560,
+        "x": 1220,
+        "y": 300,
         "wires": []
     },
     {
-        "id": "cca9f47c23cdf7e9",
+        "id": "fn_telegram",
+        "type": "function",
+        "z": "flow1",
+        "name": "Telegram Notify",
+        "func": "var token  = (global.get('tg_token') || '').trim();\nvar chatId = (global.get('tg_chat')  || '').trim();\nif (!token || !chatId) return null;\n\n// 60-second cooldown per alert type\nvar key  = 'tg_cd_' + msg.payload.replace(/[^A-Z]/g,'').substring(0,12);\nvar last = global.get(key) || 0;\nif (Date.now() - last < 60000) return null;\nglobal.set(key, Date.now());\n\nmsg.url     = 'https://api.telegram.org/bot' + token + '/sendMessage';\nmsg.method  = 'POST';\nmsg.headers = {'Content-Type':'application/json'};\nmsg.payload = JSON.stringify({\n    chat_id: chatId,\n    text: 'SmartEnv Alert\n' + msg.payload + '\n' + new Date().toLocaleTimeString()\n});\nreturn msg;",
+        "outputs": 1,
+        "x": 1000,
+        "y": 380,
+        "wires": [
+            [
+                "http_telegram"
+            ]
+        ]
+    },
+    {
+        "id": "fn_telegram_test",
+        "type": "function",
+        "z": "flow1",
+        "name": "Telegram Test",
+        "func": "var token  = (global.get('tg_token') || '').trim();\nvar chatId = (global.get('tg_chat')  || '').trim();\nif (!token || !chatId) {\n    node.warn('Set Bot Token and Chat ID first');\n    return null;\n}\nmsg.url     = 'https://api.telegram.org/bot' + token + '/sendMessage';\nmsg.method  = 'POST';\nmsg.headers = {'Content-Type':'application/json'};\nmsg.payload = JSON.stringify({\n    chat_id: chatId,\n    text: 'SmartEnv Test\nTelegram is working!\n' + new Date().toLocaleTimeString()\n});\nreturn msg;",
+        "outputs": 1,
+        "x": 500,
+        "y": 900,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "http_telegram",
+        "type": "http request",
+        "z": "flow1",
+        "name": "HTTP Telegram",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 1220,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ui_tg_token",
+        "type": "ui_text_input",
+        "z": "flow1",
+        "name": "Bot Token",
+        "label": "Bot Token",
+        "tooltip": "From @BotFather on Telegram",
+        "group": "grp_telegram",
+        "order": 1,
+        "width": "6",
+        "height": "1",
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "",
+        "topicType": "str",
+        "x": 260,
+        "y": 820,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fn_save_token",
+        "type": "function",
+        "z": "flow1",
+        "name": "Save Token",
+        "func": "var t = (msg.payload||'').trim();\nif (t) global.set('tg_token', t);\nreturn null;",
+        "outputs": 1,
+        "x": 480,
+        "y": 820,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ui_tg_chat",
+        "type": "ui_text_input",
+        "z": "flow1",
+        "name": "Chat ID",
+        "label": "Chat ID",
+        "tooltip": "From @userinfobot on Telegram",
+        "group": "grp_telegram",
+        "order": 2,
+        "width": "6",
+        "height": "1",
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "",
+        "topicType": "str",
+        "x": 260,
+        "y": 860,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fn_save_chat",
+        "type": "function",
+        "z": "flow1",
+        "name": "Save Chat ID",
+        "func": "var c = (msg.payload||'').trim();\nif (c) global.set('tg_chat', c);\nreturn null;",
+        "outputs": 1,
+        "x": 480,
+        "y": 860,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "btn_tg_test",
+        "type": "ui_button",
+        "z": "flow1",
+        "name": "Test Telegram",
+        "group": "grp_telegram",
+        "order": 3,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "📤 Send Test",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "test",
+        "payloadType": "str",
+        "topic": "",
+        "topicType": "str",
+        "x": 260,
+        "y": 900,
+        "wires": [
+            [
+                "fn_telegram_test"
+            ]
+        ]
+    },
+    {
+        "id": "ui_tg_help",
+        "type": "ui_template",
+        "z": "flow1",
+        "group": "grp_telegram",
+        "name": "Telegram Help",
+        "order": 4,
+        "width": "12",
+        "height": "2",
+        "format": "<div style=\"padding:8px;background:#f0f4f8;border-radius:4px;font-size:13px;line-height:1.9\">\n  <b>Setup:</b> 1) Search <b>@BotFather</b> on Telegram → /newbot → paste token above &nbsp;\n  2) Search <b>@userinfobot</b> → send any message → paste the Id above &nbsp;\n  3) Start your bot in Telegram &nbsp; 4) Click Send Test\n</div>",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "x": 480,
+        "y": 940,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "sw_red",
         "type": "ui_switch",
-        "z": "384592f97b4199b4",
-        "name": "Red LED",
+        "z": "flow1",
+        "name": "🔴 Red LED",
         "label": "🔴 Red LED",
         "group": "grp_manual",
         "order": 1,
@@ -591,34 +639,32 @@
         "onvalueType": "bool",
         "offvalue": "false",
         "offvalueType": "bool",
-        "x": 420,
-        "y": 960,
+        "x": 120,
+        "y": 620,
         "wires": [
-            [
-                "e3f36d8d6755024a"
-            ]
+            []
         ]
     },
     {
-        "id": "e3f36d8d6755024a",
+        "id": "sw_red_fn",
         "type": "function",
-        "z": "384592f97b4199b4",
-        "name": "Red LED Payload",
-        "func": "msg.payload = JSON.stringify({state: msg.payload ? 'on' : 'off', color: 'red'});\nreturn msg;",
+        "z": "flow1",
+        "name": "🔴 Red LED fn",
+        "func": "msg.payload = JSON.stringify({state: msg.payload?\"on\":\"off\", color:\"red\"});\nreturn msg;",
         "outputs": 1,
-        "x": 630,
-        "y": 960,
+        "x": 340,
+        "y": 620,
         "wires": [
             [
-                "439240b2f284be04"
+                "mo_led"
             ]
         ]
     },
     {
-        "id": "15b2d74037813592",
+        "id": "sw_orange",
         "type": "ui_switch",
-        "z": "384592f97b4199b4",
-        "name": "Orange LED",
+        "z": "flow1",
+        "name": "🟠 Orange LED",
         "label": "🟠 Orange LED",
         "group": "grp_manual",
         "order": 2,
@@ -628,34 +674,32 @@
         "onvalueType": "bool",
         "offvalue": "false",
         "offvalueType": "bool",
-        "x": 420,
-        "y": 1020,
+        "x": 120,
+        "y": 680,
         "wires": [
-            [
-                "f1b26c358c16c7c7"
-            ]
+            []
         ]
     },
     {
-        "id": "f1b26c358c16c7c7",
+        "id": "sw_orange_fn",
         "type": "function",
-        "z": "384592f97b4199b4",
-        "name": "Orange LED Payload",
-        "func": "msg.payload = JSON.stringify({state: msg.payload ? 'on' : 'off', color: 'orange'});\nreturn msg;",
+        "z": "flow1",
+        "name": "🟠 Yellow LED fn",
+        "func": "msg.payload = JSON.stringify({state: msg.payload?\"on\":\"off\", color:\"orange\"});\nreturn msg;",
         "outputs": 1,
-        "x": 635,
-        "y": 1020,
+        "x": 340,
+        "y": 680,
         "wires": [
             [
-                "439240b2f284be04"
+                "mo_led"
             ]
         ]
     },
     {
-        "id": "36f075a4c711955a",
+        "id": "sw_green",
         "type": "ui_switch",
-        "z": "384592f97b4199b4",
-        "name": "Green LED",
+        "z": "flow1",
+        "name": "🟢 Green LED",
         "label": "🟢 Green LED",
         "group": "grp_manual",
         "order": 3,
@@ -665,48 +709,46 @@
         "onvalueType": "bool",
         "offvalue": "false",
         "offvalueType": "bool",
-        "x": 420,
-        "y": 1080,
+        "x": 120,
+        "y": 740,
         "wires": [
-            [
-                "ce1b73e089567be9"
-            ]
+            []
         ]
     },
     {
-        "id": "ce1b73e089567be9",
+        "id": "sw_green_fn",
         "type": "function",
-        "z": "384592f97b4199b4",
-        "name": "Green LED Payload",
-        "func": "msg.payload = JSON.stringify({state: msg.payload ? 'on' : 'off', color: 'green'});\nreturn msg;",
+        "z": "flow1",
+        "name": "🟢 Green LED fn",
+        "func": "msg.payload = JSON.stringify({state: msg.payload?\"on\":\"off\", color:\"green\"});\nreturn msg;",
         "outputs": 1,
-        "x": 630,
-        "y": 1080,
+        "x": 340,
+        "y": 740,
         "wires": [
             [
-                "439240b2f284be04"
+                "mo_led"
             ]
         ]
     },
     {
-        "id": "439240b2f284be04",
+        "id": "mo_led",
         "type": "mqtt out",
-        "z": "384592f97b4199b4",
+        "z": "flow1",
         "name": "Publish LED",
         "topic": "actuators/led",
         "qos": "0",
         "retain": "",
-        "broker": "mqtt_broker_cfg",
-        "x": 870,
-        "y": 1020,
+        "broker": "broker1",
+        "x": 580,
+        "y": 680,
         "wires": []
     },
     {
-        "id": "09840aa3f97934f0",
+        "id": "sw_buzzer",
         "type": "ui_switch",
-        "z": "384592f97b4199b4",
+        "z": "flow1",
         "name": "Buzzer",
-        "label": "🔔 Buzzer",
+        "label": "Buzzer",
         "group": "grp_manual",
         "order": 4,
         "width": "3",
@@ -715,48 +757,46 @@
         "onvalueType": "bool",
         "offvalue": "false",
         "offvalueType": "bool",
-        "x": 420,
-        "y": 1140,
+        "x": 120,
+        "y": 800,
         "wires": [
-            [
-                "c279d6c19faa7e4e"
-            ]
+            []
         ]
     },
     {
-        "id": "c279d6c19faa7e4e",
+        "id": "fn_buzzer",
         "type": "function",
-        "z": "384592f97b4199b4",
-        "name": "Buzzer Payload",
-        "func": "msg.payload = JSON.stringify({state: msg.payload ? 'on' : 'off', duration: 2000});\nreturn msg;",
+        "z": "flow1",
+        "name": "Buzzer fn",
+        "func": "msg.payload = JSON.stringify({state: msg.payload?\"on\":\"off\", duration:2000});\nreturn msg;",
         "outputs": 1,
-        "x": 630,
-        "y": 1140,
+        "x": 340,
+        "y": 800,
         "wires": [
             [
-                "2e545943dc1553de"
+                "mo_buzzer"
             ]
         ]
     },
     {
-        "id": "2e545943dc1553de",
+        "id": "mo_buzzer",
         "type": "mqtt out",
-        "z": "384592f97b4199b4",
+        "z": "flow1",
         "name": "Publish Buzzer",
         "topic": "actuators/buzzer",
         "qos": "0",
         "retain": "",
-        "broker": "mqtt_broker_cfg",
-        "x": 870,
-        "y": 1140,
+        "broker": "broker1",
+        "x": 580,
+        "y": 800,
         "wires": []
     },
     {
-        "id": "851f533a2637781e",
+        "id": "sw_relay",
         "type": "ui_switch",
-        "z": "384592f97b4199b4",
+        "z": "flow1",
         "name": "Relay",
-        "label": "⚡ Relay",
+        "label": "Relay",
         "group": "grp_manual",
         "order": 5,
         "width": "3",
@@ -765,48 +805,46 @@
         "onvalueType": "bool",
         "offvalue": "false",
         "offvalueType": "bool",
-        "x": 420,
-        "y": 1200,
+        "x": 120,
+        "y": 860,
         "wires": [
-            [
-                "58fca199cb4ac9f1"
-            ]
+            []
         ]
     },
     {
-        "id": "58fca199cb4ac9f1",
+        "id": "fn_relay",
         "type": "function",
-        "z": "384592f97b4199b4",
-        "name": "Relay Payload",
-        "func": "msg.payload = JSON.stringify({state: msg.payload ? 'on' : 'off'});\nreturn msg;",
+        "z": "flow1",
+        "name": "Relay fn",
+        "func": "msg.payload = JSON.stringify({state: msg.payload?\"on\":\"off\"});\nreturn msg;",
         "outputs": 1,
-        "x": 630,
-        "y": 1200,
+        "x": 340,
+        "y": 860,
         "wires": [
             [
-                "9e57a8f25d9a9080"
+                "mo_relay"
             ]
         ]
     },
     {
-        "id": "9e57a8f25d9a9080",
+        "id": "mo_relay",
         "type": "mqtt out",
-        "z": "384592f97b4199b4",
+        "z": "flow1",
         "name": "Publish Relay",
         "topic": "actuators/relay",
         "qos": "0",
         "retain": "",
-        "broker": "mqtt_broker_cfg",
-        "x": 870,
-        "y": 1200,
+        "broker": "broker1",
+        "x": 580,
+        "y": 860,
         "wires": []
     },
     {
-        "id": "a8d0b4f747e2dfdd",
+        "id": "sl_servo",
         "type": "ui_slider",
-        "z": "384592f97b4199b4",
+        "z": "flow1",
         "name": "Servo Angle",
-        "label": "🔧 Servo Angle (0–180°)",
+        "label": "Servo Angle (0–180°)",
         "tooltip": "",
         "group": "grp_manual",
         "order": 6,
@@ -816,49 +854,49 @@
         "min": 0,
         "max": 180,
         "step": 1,
-        "x": 430,
-        "y": 1260,
+        "x": 120,
+        "y": 920,
         "wires": [
             [
-                "8c292e5f4d9360a7"
+                "fn_servo"
             ]
         ]
     },
     {
-        "id": "8c292e5f4d9360a7",
+        "id": "fn_servo",
         "type": "function",
-        "z": "384592f97b4199b4",
-        "name": "Servo Payload",
+        "z": "flow1",
+        "name": "Servo fn",
         "func": "msg.payload = JSON.stringify({angle: msg.payload});\nreturn msg;",
         "outputs": 1,
-        "x": 630,
-        "y": 1260,
+        "x": 340,
+        "y": 920,
         "wires": [
             [
-                "f80ae12134826d04"
+                "mo_servo"
             ]
         ]
     },
     {
-        "id": "f80ae12134826d04",
+        "id": "mo_servo",
         "type": "mqtt out",
-        "z": "384592f97b4199b4",
+        "z": "flow1",
         "name": "Publish Servo",
         "topic": "actuators/servo",
         "qos": "0",
         "retain": "",
-        "broker": "mqtt_broker_cfg",
-        "x": 870,
-        "y": 1260,
+        "broker": "broker1",
+        "x": 580,
+        "y": 920,
         "wires": []
     },
     {
-        "id": "750de16d3bf259d1",
+        "id": "num_temp",
         "type": "ui_numeric",
-        "z": "384592f97b4199b4",
-        "name": "Temp Threshold",
+        "z": "flow1",
+        "name": "Temp Max",
         "label": "🌡 Temp Max (°C)",
-        "tooltip": "Default 30",
+        "tooltip": "Default: 30",
         "group": "grp_thresh",
         "order": 1,
         "width": "4",
@@ -868,36 +906,36 @@
         "min": 0,
         "max": 60,
         "step": 1,
-        "x": 440,
-        "y": 1380,
+        "x": 120,
+        "y": 1020,
         "wires": [
             [
-                "659ff207e0520bbe"
+                "fn_thr_temp"
             ]
         ]
     },
     {
-        "id": "659ff207e0520bbe",
+        "id": "fn_thr_temp",
         "type": "function",
-        "z": "384592f97b4199b4",
-        "name": "Set Temp Threshold",
-        "func": "flow.set('temp_max', msg.payload);\nmsg.payload = JSON.stringify({temp_max: msg.payload, light_min: flow.get('light_min')||2000, dist_min: flow.get('dist_min')||20});\nreturn msg;",
+        "z": "flow1",
+        "name": "Save Temp Thr",
+        "func": "global.set('thr_temp', msg.payload);\nmsg.payload = JSON.stringify({\n    temp_max:  msg.payload,\n    light_min: global.get('thr_light') || 2000,\n    dist_min:  global.get('thr_dist')  || 20\n});\nreturn msg;",
         "outputs": 1,
-        "x": 680,
-        "y": 1380,
+        "x": 360,
+        "y": 1020,
         "wires": [
             [
-                "d074886760d31de0"
+                "mo_thresh"
             ]
         ]
     },
     {
-        "id": "5e16d5fcaf5650e4",
+        "id": "num_light",
         "type": "ui_numeric",
-        "z": "384592f97b4199b4",
-        "name": "Light Threshold",
-        "label": "💡 Light Min (raw)",
-        "tooltip": "Default 2000",
+        "z": "flow1",
+        "name": "Light Min",
+        "label": "Light Min (raw)",
+        "tooltip": "Default: 2000",
         "group": "grp_thresh",
         "order": 2,
         "width": "4",
@@ -907,36 +945,36 @@
         "min": 0,
         "max": 4095,
         "step": 50,
-        "x": 440,
-        "y": 1440,
+        "x": 120,
+        "y": 1080,
         "wires": [
             [
-                "838f18201fc796f1"
+                "fn_thr_light"
             ]
         ]
     },
     {
-        "id": "838f18201fc796f1",
+        "id": "fn_thr_light",
         "type": "function",
-        "z": "384592f97b4199b4",
-        "name": "Set Light Threshold",
-        "func": "flow.set('light_min', msg.payload);\nmsg.payload = JSON.stringify({temp_max: flow.get('temp_max')||30, light_min: msg.payload, dist_min: flow.get('dist_min')||20});\nreturn msg;",
+        "z": "flow1",
+        "name": "Save Light Thr",
+        "func": "global.set('thr_light', msg.payload);\nmsg.payload = JSON.stringify({\n    temp_max:  global.get('thr_temp') || 30,\n    light_min: msg.payload,\n    dist_min:  global.get('thr_dist') || 20\n});\nreturn msg;",
         "outputs": 1,
-        "x": 680,
-        "y": 1440,
+        "x": 360,
+        "y": 1080,
         "wires": [
             [
-                "d074886760d31de0"
+                "mo_thresh"
             ]
         ]
     },
     {
-        "id": "8c9a033d042fc011",
+        "id": "num_dist",
         "type": "ui_numeric",
-        "z": "384592f97b4199b4",
-        "name": "Dist Threshold",
-        "label": "📏 Distance Min (cm)",
-        "tooltip": "Default 20",
+        "z": "flow1",
+        "name": "Dist Min",
+        "label": "Distance Min (cm)",
+        "tooltip": "Default: 20",
         "group": "grp_thresh",
         "order": 3,
         "width": "4",
@@ -946,100 +984,477 @@
         "min": 1,
         "max": 200,
         "step": 1,
-        "x": 440,
-        "y": 1500,
+        "x": 120,
+        "y": 1140,
         "wires": [
             [
-                "837a05a9d3923e5f"
+                "fn_thr_dist"
             ]
         ]
     },
     {
-        "id": "837a05a9d3923e5f",
+        "id": "fn_thr_dist",
         "type": "function",
-        "z": "384592f97b4199b4",
-        "name": "Set Dist Threshold",
-        "func": "flow.set('dist_min', msg.payload);\nmsg.payload = JSON.stringify({temp_max: flow.get('temp_max')||30, light_min: flow.get('light_min')||2000, dist_min: msg.payload});\nreturn msg;",
+        "z": "flow1",
+        "name": "Save Dist Thr",
+        "func": "global.set('thr_dist', msg.payload);\nmsg.payload = JSON.stringify({\n    temp_max:  global.get('thr_temp')  || 30,\n    light_min: global.get('thr_light') || 2000,\n    dist_min:  msg.payload\n});\nreturn msg;",
         "outputs": 1,
-        "x": 680,
-        "y": 1500,
+        "x": 360,
+        "y": 1140,
         "wires": [
             [
-                "d074886760d31de0"
+                "mo_thresh"
             ]
         ]
     },
     {
-        "id": "d074886760d31de0",
+        "id": "mo_thresh",
         "type": "mqtt out",
-        "z": "384592f97b4199b4",
+        "z": "flow1",
         "name": "Publish Thresholds",
         "topic": "config/thresholds",
         "qos": "0",
         "retain": "true",
-        "broker": "mqtt_broker_cfg",
-        "x": 920,
-        "y": 1440,
+        "broker": "broker1",
+        "x": 620,
+        "y": 1080,
         "wires": []
     },
     {
-        "id": "0b82cbc405707da4",
-        "type": "inject",
-        "z": "384592f97b4199b4",
-        "name": "Log Every 30s",
-        "repeat": "30",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 430,
-        "y": 1620,
+        "id": "mi_status",
+        "type": "mqtt in",
+        "z": "flow1",
+        "name": "sub system/status",
+        "topic": "system/status",
+        "qos": "0",
+        "datatype": "utf8",
+        "broker": "broker1",
+        "inputs": 0,
+        "x": 100,
+        "y": 1240,
         "wires": [
             [
-                "f5af5d3ee71f5321"
+                "fn_status",
+                "fn_wd_reset"
             ]
         ]
     },
     {
-        "id": "f5af5d3ee71f5321",
+        "id": "fn_status",
         "type": "function",
-        "z": "384592f97b4199b4",
-        "name": "Append to Log",
-        "func": "var log = global.get('sensor_log') || [];\nlog.push({\n  ts:     Date.now(),\n  time:   new Date().toISOString(),\n  temp:   global.get('last_temp')   || 0,\n  hum:    global.get('last_hum')    || 0,\n  light:  global.get('last_light')  || 0,\n  motion: global.get('last_motion') || false,\n  dist:   global.get('last_dist')   || 0\n});\nvar cutoff = Date.now() - 86400000;\nlog = log.filter(function(r){ return r.ts > cutoff; });\nglobal.set('sensor_log', log);\nreturn null;",
+        "z": "flow1",
+        "name": "Format Status",
+        "func": "try {\n    var d = JSON.parse(msg.payload);\n    msg.payload = 'Uptime: ' + d.uptime + 's   |   RSSI: ' + d.rssi + ' dBm   |   Free Heap: ' + d.free_memory + ' bytes';\n    return msg;\n} catch(e) { return null; }",
         "outputs": 1,
-        "x": 650,
-        "y": 1620,
+        "x": 340,
+        "y": 1220,
+        "wires": [
+            [
+                "ui_esp32_status"
+            ]
+        ]
+    },
+    {
+        "id": "ui_esp32_status",
+        "type": "ui_text",
+        "z": "flow1",
+        "group": "grp_status",
+        "order": 1,
+        "width": "12",
+        "height": "1",
+        "name": "ESP32 Info",
+        "label": "ESP32",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 580,
+        "y": 1220,
+        "wires": []
+    },
+    {
+        "id": "fn_wd_reset",
+        "type": "function",
+        "z": "flow1",
+        "name": "Reset Watchdog",
+        "func": "global.set('last_heartbeat', Date.now());\nreturn null;",
+        "outputs": 1,
+        "x": 340,
+        "y": 1280,
         "wires": [
             []
         ]
     },
     {
-        "id": "ui_download_link",
-        "type": "ui_template",
-        "z": "384592f97b4199b4",
+        "id": "inj_wd",
+        "type": "inject",
+        "z": "flow1",
+        "name": "Check Every 5s",
+        "repeat": "5",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.5,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 100,
+        "y": 1340,
+        "wires": [
+            [
+                "fn_watchdog"
+            ]
+        ]
+    },
+    {
+        "id": "fn_watchdog",
+        "type": "function",
+        "z": "flow1",
+        "name": "Watchdog Check",
+        "func": "var last = global.get('last_heartbeat') || 0;\nvar diff = Date.now() - last;\nif (last === 0) {\n    msg.payload = 'Waiting for ESP32...';\n} else if (diff > 30000) {\n    msg.payload = 'ESP32 OFFLINE — No heartbeat for ' + Math.round(diff/1000) + 's';\n} else {\n    msg.payload = 'ESP32 Online — Last seen ' + Math.round(diff/1000) + 's ago';\n}\nreturn msg;",
+        "outputs": 1,
+        "x": 320,
+        "y": 1340,
+        "wires": [
+            [
+                "ui_connection"
+            ]
+        ]
+    },
+    {
+        "id": "ui_connection",
+        "type": "ui_text",
+        "z": "flow1",
         "group": "grp_status",
-        "name": "CSV Download Link",
-        "order": 4,
-        "width": "4",
+        "order": 2,
+        "width": "12",
         "height": "1",
-        "format": "<a href='http://localhost:1880/download-csv' target='_blank' style='display:block;background:#2196F3;color:white;text-align:center;padding:8px;border-radius:4px;text-decoration:none;font-weight:bold;'>⬇ Download CSV</a>",
+        "name": "Connection",
+        "label": "Connection",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 560,
+        "y": 1340,
+        "wires": []
+    },
+    {
+        "id": "inj_startup",
+        "type": "inject",
+        "z": "flow1",
+        "name": "Startup Init",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.3,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 100,
+        "y": 1400,
+        "wires": [
+            [
+                "fn_startup"
+            ]
+        ]
+    },
+    {
+        "id": "fn_startup",
+        "type": "function",
+        "z": "flow1",
+        "name": "Init Status Text",
+        "func": "node.send([\n    {payload: 'Waiting for ESP32 heartbeat...'},\n    {payload: 'Waiting for ESP32...'}\n]);",
+        "outputs": 2,
+        "x": 320,
+        "y": 1400,
+        "wires": [
+            [
+                "ui_esp32_status"
+            ],
+            [
+                "ui_connection"
+            ]
+        ]
+    },
+    {
+        "id": "inj_log",
+        "type": "inject",
+        "z": "flow1",
+        "name": "Log Every 30s",
+        "repeat": "30",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 2,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 100,
+        "y": 1500,
+        "wires": [
+            [
+                "fn_log"
+            ]
+        ]
+    },
+    {
+        "id": "fn_log",
+        "type": "function",
+        "z": "flow1",
+        "name": "Append Log",
+        "func": "var log = global.get('sensor_log') || [];\nvar isNew = log.length === 0;\nvar entry = {\n    ts:     Date.now(),\n    time:   new Date().toISOString(),\n    temp:   global.get('last_temp')   || 0,\n    hum:    global.get('last_hum')    || 0,\n    light:  global.get('last_light')  || 0,\n    motion: global.get('last_motion') || false,\n    dist:   global.get('last_dist')   || 0\n};\nlog.push(entry);\nlog = log.filter(function(r){ return r.ts > Date.now() - 86400000; });\nglobal.set('sensor_log', log);\n\nvar row = entry.time+','+entry.temp+','+entry.hum+','+entry.light+','+entry.motion+','+entry.dist+'\\n';\nif (isNew) {\n    msg.payload  = 'Timestamp,Temp_C,Humidity_pct,Light_raw,Motion,Distance_cm\\n' + row;\n    msg.overwrite = true;\n} else {\n    msg.payload   = row;\n    msg.overwrite = false;\n}\nreturn msg;",
+        "outputs": 1,
+        "x": 320,
+        "y": 1500,
+        "wires": [
+            [
+                "fn_csv_route"
+            ]
+        ]
+    },
+    {
+        "id": "fn_csv_route",
+        "type": "function",
+        "z": "flow1",
+        "name": "CSV Route",
+        "func": "if (msg.overwrite) { node.send([msg, null]); }\nelse              { node.send([null, msg]); }",
+        "outputs": 2,
+        "x": 540,
+        "y": 1500,
+        "wires": [
+            [
+                "file_new"
+            ],
+            [
+                "file_append"
+            ]
+        ]
+    },
+    {
+        "id": "file_new",
+        "type": "file",
+        "z": "flow1",
+        "name": "CSV New File",
+        "filename": "/tmp/smartenv.csv",
+        "filenameType": "str",
+        "appendNewline": false,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 760,
+        "y": 1460,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "file_append",
+        "type": "file",
+        "z": "flow1",
+        "name": "CSV Append",
+        "filename": "/tmp/smartenv.csv",
+        "filenameType": "str",
+        "appendNewline": false,
+        "createDir": true,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 760,
+        "y": 1540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "http_in",
+        "type": "http in",
+        "z": "flow1",
+        "name": "GET /download-csv",
+        "url": "/download-csv",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 1620,
+        "wires": [
+            [
+                "fn_csv_dl"
+            ]
+        ]
+    },
+    {
+        "id": "fn_csv_dl",
+        "type": "function",
+        "z": "flow1",
+        "name": "Build CSV Download",
+        "func": "var hours  = parseInt(msg.req.query.hours) || 24;\nvar cutoff = Date.now() - hours * 3600000;\nvar log    = global.get('sensor_log') || [];\nvar rows   = log.filter(function(r){ return r.ts >= cutoff; });\nvar csv    = 'Timestamp,Temp_C,Humidity_pct,Light_raw,Motion,Distance_cm\\n';\nrows.forEach(function(r){\n    csv += r.time+','+r.temp+','+r.hum+','+r.light+','+r.motion+','+r.dist+'\\n';\n});\nmsg.payload = csv;\nmsg.headers = {\n    'Content-Type': 'text/csv',\n    'Content-Disposition': 'attachment; filename=\"smartenv_'+hours+'h.csv\"'\n};\nreturn msg;",
+        "outputs": 1,
+        "x": 340,
+        "y": 1620,
+        "wires": [
+            [
+                "http_out"
+            ]
+        ]
+    },
+    {
+        "id": "http_out",
+        "type": "http response",
+        "z": "flow1",
+        "name": "HTTP Response",
+        "statusCode": "",
+        "headers": {},
+        "x": 560,
+        "y": 1620,
+        "wires": []
+    },
+    {
+        "id": "btn_1h",
+        "type": "ui_button",
+        "z": "flow1",
+        "name": "Last 1h",
+        "group": "grp_history",
+        "order": 1,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "Last 1h",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "1",
+        "payloadType": "num",
+        "topic": "",
+        "topicType": "str",
+        "x": 120,
+        "y": 1720,
+        "wires": [
+            [
+                "fn_history"
+            ]
+        ]
+    },
+    {
+        "id": "btn_6h",
+        "type": "ui_button",
+        "z": "flow1",
+        "name": "Last 6h",
+        "group": "grp_history",
+        "order": 2,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "Last 6h",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "6",
+        "payloadType": "num",
+        "topic": "",
+        "topicType": "str",
+        "x": 120,
+        "y": 1780,
+        "wires": [
+            [
+                "fn_history"
+            ]
+        ]
+    },
+    {
+        "id": "btn_24h",
+        "type": "ui_button",
+        "z": "flow1",
+        "name": "Last 24h",
+        "group": "grp_history",
+        "order": 3,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "Last 24h",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "24",
+        "payloadType": "num",
+        "topic": "",
+        "topicType": "str",
+        "x": 120,
+        "y": 1840,
+        "wires": [
+            [
+                "fn_history"
+            ]
+        ]
+    },
+    {
+        "id": "fn_history",
+        "type": "function",
+        "z": "flow1",
+        "name": "Filter History",
+        "func": "var hours  = parseInt(msg.payload) || 1;\nvar cutoff = Date.now() - hours * 3600000;\nvar log    = global.get('sensor_log') || [];\nvar rows   = log.filter(function(r){ return r.ts >= cutoff; });\n// Clear chart first\nnode.send({payload:[], topic:'Temperature'});\nnode.send({payload:[], topic:'Humidity'});\n// Send each point\nrows.forEach(function(r){\n    node.send({payload: r.temp, topic:'Temperature', x: r.ts});\n});\nrows.forEach(function(r){\n    node.send({payload: r.hum,  topic:'Humidity',    x: r.ts});\n});\nreturn null;",
+        "outputs": 1,
+        "x": 360,
+        "y": 1780,
+        "wires": [
+            [
+                "chart_history"
+            ]
+        ]
+    },
+    {
+        "id": "chart_history",
+        "type": "ui_chart",
+        "z": "flow1",
+        "name": "Historical Chart",
+        "group": "grp_history",
+        "order": 4,
+        "width": "12",
+        "height": "4",
+        "label": "Historical Trend",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm",
+        "interpolate": "linear",
+        "nodata": "Click a time range button above",
+        "dot": false,
+        "ymin": 0,
+        "ymax": 100,
+        "removeOlder": 24,
+        "removeOlderPoints": "500",
+        "removeOlderUnit": "3600",
+        "colors": [
+            "#e74c3c",
+            "#3498db"
+        ],
+        "outputs": 1,
+        "x": 600,
+        "y": 1780,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ui_csv_links",
+        "type": "ui_template",
+        "z": "flow1",
+        "group": "grp_history",
+        "name": "Download Links",
+        "order": 5,
+        "width": "12",
+        "height": "1",
+        "format": "<div style=\"display:flex;gap:8px;padding:4px 0\">\n  <a href=\"/download-csv?hours=1\"  target=\"_blank\" style=\"flex:1;display:block;background:#1976D2;color:#fff;text-align:center;padding:8px;border-radius:4px;text-decoration:none;font-weight:500;font-size:13px\">⬇ Last 1h CSV</a>\n  <a href=\"/download-csv?hours=6\"  target=\"_blank\" style=\"flex:1;display:block;background:#1976D2;color:#fff;text-align:center;padding:8px;border-radius:4px;text-decoration:none;font-weight:500;font-size:13px\">⬇ Last 6h CSV</a>\n  <a href=\"/download-csv?hours=24\" target=\"_blank\" style=\"flex:1;display:block;background:#1976D2;color:#fff;text-align:center;padding:8px;border-radius:4px;text-decoration:none;font-weight:500;font-size:13px\">⬇ Last 24h CSV</a>\n</div>",
         "storeOutMessages": false,
         "fwdInMessages": false,
-        "x": 1100,
+        "x": 600,
         "y": 1860,
         "wires": [
             []
         ]
     },
     {
-        "id": "mqtt_broker_cfg",
+        "id": "broker1",
         "type": "mqtt-broker",
         "name": "HiveMQ Public",
         "broker": "broker.hivemq.com",
         "port": "1883",
-        "clientid": "NodeRED_SmartEnv_001_Mme",
+        "clientid": "NodeRED_SmartEnv_001",
         "autoConnect": true,
         "usetls": false,
         "protocolVersion": 4,
@@ -1061,10 +1476,10 @@
         "sessionExpiry": ""
     },
     {
-        "id": "grp_gauges",
+        "id": "grp_sensors",
         "type": "ui_group",
         "name": "Sensor Readings",
-        "tab": "tab_main",
+        "tab": "tab_dash",
         "order": 1,
         "disp": true,
         "width": "12"
@@ -1079,20 +1494,20 @@
         "width": "12"
     },
     {
-        "id": "grp_status",
+        "id": "grp_alert",
         "type": "ui_group",
-        "name": "ESP32 Info",
-        "tab": "tab_status",
+        "name": "Alert History",
+        "tab": "tab_alerts",
         "order": 1,
         "disp": true,
         "width": "12"
     },
     {
-        "id": "grp_alertlog",
+        "id": "grp_telegram",
         "type": "ui_group",
-        "name": "Alert History",
-        "tab": "tab_alerts",
-        "order": 1,
+        "name": "Telegram Notifications",
+        "tab": "tab_data",
+        "order": 2,
         "disp": true,
         "width": "12"
     },
@@ -1115,35 +1530,69 @@
         "width": "12"
     },
     {
+        "id": "grp_status",
+        "type": "ui_group",
+        "name": "ESP32 Info",
+        "tab": "tab_status",
+        "order": 1,
+        "disp": true,
+        "width": "12"
+    },
+    {
+        "id": "grp_history",
+        "type": "ui_group",
+        "name": "Historical Trends",
+        "tab": "tab_data",
+        "order": 1,
+        "disp": true,
+        "width": "12"
+    },
+    {
+        "id": "tab_dash",
+        "type": "ui_tab",
+        "name": "Dashboard",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    },
+    {
         "id": "tab_main",
         "type": "ui_tab",
-        "name": "📊 Dashboard",
+        "name": "Dashboard",
         "icon": "dashboard",
         "order": 1
     },
     {
-        "id": "tab_status",
-        "type": "ui_tab",
-        "name": "📶 Status",
-        "icon": "wifi",
-        "order": 4
-    },
-    {
         "id": "tab_alerts",
         "type": "ui_tab",
-        "name": "🚨 Alerts",
+        "name": "Alerts",
         "icon": "warning",
         "order": 3
     },
     {
+        "id": "tab_data",
+        "type": "ui_tab",
+        "name": "Data & Notifications",
+        "icon": "storage",
+        "order": 5
+    },
+    {
         "id": "tab_control",
         "type": "ui_tab",
-        "name": "🎛 Control",
+        "name": "Control",
         "icon": "settings",
         "order": 2
     },
     {
-        "id": "b48d6999f7d7e81f",
+        "id": "tab_status",
+        "type": "ui_tab",
+        "name": "Status",
+        "icon": "wifi",
+        "order": 4
+    },
+    {
+        "id": "3bba5df8644635af",
         "type": "global-config",
         "env": [],
         "modules": {
