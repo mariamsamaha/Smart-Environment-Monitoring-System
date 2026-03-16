@@ -267,7 +267,7 @@
         "type": "function",
         "z": "be797c4777cb20ac",
         "name": "Parse Motion",
-        "func": "// Lab 4: parse JSON payload from ESP32\n// Assignment topic: sensors/motion  payload: {detected: true/false}\ntry {\n    var d = JSON.parse(msg.payload);\n    global.set('last_motion', d.detected);\n    if (d.detected) {\n        node.send([\n            { payload: ' Motion Detected' },\n            { payload: ' MOTION DETECTED', topic: new Date().toLocaleTimeString() }\n        ]);\n    } else {\n        node.send([{ payload: ' No Motion' }, null]);\n    }\n} catch(e) {}",
+        "func": "try {\n    var d = JSON.parse(msg.payload);\n    global.set('last_motion', d.detected);\n    if (d.detected) {\n        node.send([\n            { payload: ' Motion Detected' },\n            { payload: ' MOTION DETECTED', topic: new Date().toLocaleTimeString() }\n        ]);\n    } else {\n        node.send([{ payload: ' No Motion' }, null]);\n    }\n} catch(e) {}",
         "outputs": 2,
         "x": 290,
         "y": 400,
