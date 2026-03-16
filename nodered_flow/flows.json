@@ -1,6 +1,6 @@
 [
     {
-        "id": "flow1",
+        "id": "be797c4777cb20ac",
         "type": "tab",
         "label": "Smart Environment",
         "disabled": false,
@@ -8,9 +8,9 @@
         "env": []
     },
     {
-        "id": "mi_temp",
+        "id": "a4415b21a2fb395f",
         "type": "mqtt in",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "sub temperature",
         "topic": "sensors/temperature",
         "qos": "0",
@@ -21,30 +21,37 @@
         "y": 80,
         "wires": [
             [
-                "fn_temp"
+                "65653ee51407238a"
             ]
         ]
     },
     {
-        "id": "fn_temp",
+        "id": "65653ee51407238a",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Parse Temp",
         "func": "try {\n    var d = JSON.parse(msg.payload);\n    var v = parseFloat(d.value);\n    if (isNaN(v)) return null;\n    global.set('last_temp', v);\n    msg.payload = v;\n    msg.topic = 'Temperature';\n    return msg;\n} catch(e) { return null; }",
         "outputs": 1,
-        "x": 300,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
         "y": 80,
         "wires": [
             [
-                "chart_live",
-                "fn_temp_check"
+                "2f44998d452872de",
+                "37c0dd607e6671ee",
+                "ea61e02e2880675f",
+                "a67dadc0bfc2155b"
             ]
         ]
     },
     {
-        "id": "gauge_temp",
+        "id": "ea61e02e2880675f",
         "type": "ui_gauge",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Temperature",
         "group": "grp_sensors",
         "order": 1,
@@ -63,29 +70,34 @@
         ],
         "seg1": 25,
         "seg2": 35,
-        "x": 540,
-        "y": 60,
+        "x": 580,
+        "y": 40,
         "wires": []
     },
     {
-        "id": "fn_temp_check",
+        "id": "37c0dd607e6671ee",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Temp Alert Check",
-        "func": "var thr = global.get('thr_temp') || 30;\nif (msg.payload > thr) {\n    msg.payload = '🔴 HIGH TEMPERATURE: ' + msg.payload.toFixed(1) + '°C';\n    msg.topic = new Date().toLocaleTimeString();\n    return msg;\n}\nreturn null;",
+        "func": "var thr = global.get('thr_temp') || 30;\nif (msg.payload > thr) {\n    msg.payload = 'HIGH TEMPERATURE: ' + msg.payload.toFixed(1) + '°C';\n    msg.topic = new Date().toLocaleTimeString();\n    return msg;\n}\nreturn null;",
         "outputs": 1,
-        "x": 540,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
         "y": 100,
         "wires": [
             [
-                "fn_alert_handler"
+                "816e98bdca71c100"
             ]
         ]
     },
     {
-        "id": "mi_hum",
+        "id": "ed3c38891c9b6662",
         "type": "mqtt in",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "sub humidity",
         "topic": "sensors/humidity",
         "qos": "0",
@@ -93,32 +105,38 @@
         "broker": "broker1",
         "inputs": 0,
         "x": 100,
-        "y": 180,
+        "y": 200,
         "wires": [
             [
-                "fn_hum"
+                "2feae34d9144a832"
             ]
         ]
     },
     {
-        "id": "fn_hum",
+        "id": "2feae34d9144a832",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Parse Hum",
         "func": "try {\n    var d = JSON.parse(msg.payload);\n    var v = parseFloat(d.value);\n    if (isNaN(v)) return null;\n    global.set('last_hum', v);\n    msg.payload = v;\n    msg.topic = 'Humidity';\n    return msg;\n} catch(e) { return null; }",
         "outputs": 1,
-        "x": 300,
-        "y": 180,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 200,
         "wires": [
             [
-                "chart_live"
+                "2f44998d452872de",
+                "fc1314e5339519e5"
             ]
         ]
     },
     {
-        "id": "gauge_hum",
+        "id": "fc1314e5339519e5",
         "type": "ui_gauge",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Humidity",
         "group": "grp_sensors",
         "order": 2,
@@ -137,14 +155,14 @@
         ],
         "seg1": 30,
         "seg2": 60,
-        "x": 540,
-        "y": 180,
+        "x": 580,
+        "y": 200,
         "wires": []
     },
     {
-        "id": "mi_light",
+        "id": "846bc3fad936da56",
         "type": "mqtt in",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "sub light",
         "topic": "sensors/light",
         "qos": "0",
@@ -152,32 +170,38 @@
         "broker": "broker1",
         "inputs": 0,
         "x": 100,
-        "y": 280,
+        "y": 320,
         "wires": [
             [
-                "fn_light"
+                "ce745e1880f19f96"
             ]
         ]
     },
     {
-        "id": "fn_light",
+        "id": "ce745e1880f19f96",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Parse Light",
         "func": "try {\n    var d = JSON.parse(msg.payload);\n    var v = parseInt(d.value);\n    if (isNaN(v)) return null;\n    global.set('last_light', v);\n    msg.payload = v;\n    return msg;\n} catch(e) { return null; }",
         "outputs": 1,
-        "x": 300,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 270,
         "y": 280,
         "wires": [
             [
-                "fn_light_check"
+                "98dc76e26e8f57a4",
+                "e93cd3c02022e14f"
             ]
         ]
     },
     {
-        "id": "gauge_light",
+        "id": "e93cd3c02022e14f",
         "type": "ui_gauge",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Light Level",
         "group": "grp_sensors",
         "order": 3,
@@ -196,114 +220,125 @@
         ],
         "seg1": 500,
         "seg2": 2000,
-        "x": 540,
+        "x": 530,
         "y": 260,
         "wires": []
     },
     {
-        "id": "fn_light_check",
+        "id": "98dc76e26e8f57a4",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Light Alert Check",
-        "func": "var thr = global.get('thr_light') || 2000;\nif (msg.payload < thr) {\n    msg.payload = '🌑 LOW LIGHT: ' + msg.payload;\n    msg.topic = new Date().toLocaleTimeString();\n    return msg;\n}\nreturn null;",
+        "func": "var thr = global.get('thr_light') || 2000;\nif (msg.payload < thr) {\n    msg.payload = ' LOW LIGHT: ' + msg.payload;\n    msg.topic = new Date().toLocaleTimeString();\n    return msg;\n}\nreturn null;",
         "outputs": 1,
-        "x": 540,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 530,
         "y": 300,
         "wires": [
             [
-                "fn_alert_handler"
+                "816e98bdca71c100"
             ]
         ]
     },
     {
-        "id": "mi_motion",
+        "id": "1dbb4ef6d3db6e1b",
         "type": "mqtt in",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "sub motion",
         "topic": "sensors/motion",
         "qos": "0",
         "datatype": "utf8",
         "broker": "broker1",
         "inputs": 0,
-        "x": 100,
-        "y": 380,
+        "x": 80,
+        "y": 420,
         "wires": [
             [
-                "fn_motion"
+                "8fa8a0e11c6554df"
             ]
         ]
     },
     {
-        "id": "fn_motion",
+        "id": "8fa8a0e11c6554df",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Parse Motion",
-        "func": "try {\n    var d = JSON.parse(msg.payload);\n    global.set('last_motion', d.detected);\n    if (d.detected) {\n        node.send([\n            {payload: '🚨 Motion Detected'},\n            {payload: '🚨 MOTION DETECTED', topic: new Date().toLocaleTimeString()}\n        ]);\n    } else {\n        node.send([{payload: '✅ No Motion'}, null]);\n    }\n} catch(e) {}",
+        "func": "// Lab 4: parse JSON payload from ESP32\n// Assignment topic: sensors/motion  payload: {detected: true/false}\ntry {\n    var d = JSON.parse(msg.payload);\n    global.set('last_motion', d.detected);\n    if (d.detected) {\n        node.send([\n            { payload: ' Motion Detected' },\n            { payload: ' MOTION DETECTED', topic: new Date().toLocaleTimeString() }\n        ]);\n    } else {\n        node.send([{ payload: ' No Motion' }, null]);\n    }\n} catch(e) {}",
         "outputs": 2,
-        "x": 300,
-        "y": 380,
+        "x": 290,
+        "y": 400,
         "wires": [
             [
-                "txt_motion"
+                "44c84af8bb465ece"
             ],
             [
-                "fn_alert_handler"
+                "816e98bdca71c100"
             ]
         ]
     },
     {
-        "id": "txt_motion",
+        "id": "44c84af8bb465ece",
         "type": "ui_text",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "group": "grp_sensors",
         "order": 4,
         "width": "3",
         "height": "3",
         "name": "Motion",
-        "label": "Motion",
+        "label": "Motion Status",
         "format": "{{msg.payload}}",
         "layout": "col-center",
-        "x": 540,
-        "y": 380,
+        "x": 430,
+        "y": 360,
         "wires": []
     },
     {
-        "id": "mi_dist",
+        "id": "31167118d46a6af8",
         "type": "mqtt in",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "sub distance",
         "topic": "sensors/distance",
         "qos": "0",
         "datatype": "utf8",
         "broker": "broker1",
         "inputs": 0,
-        "x": 100,
-        "y": 480,
+        "x": 110,
+        "y": 520,
         "wires": [
             [
-                "fn_dist"
+                "d4f173610a340a69"
             ]
         ]
     },
     {
-        "id": "fn_dist",
+        "id": "d4f173610a340a69",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Parse Distance",
         "func": "try {\n    var d = JSON.parse(msg.payload);\n    var v = parseFloat(d.value);\n    if (isNaN(v)) return null;\n    global.set('last_dist', v);\n    msg.payload = v;\n    return msg;\n} catch(e) { return null; }",
         "outputs": 1,
-        "x": 300,
-        "y": 480,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 500,
         "wires": [
             [
-                "fn_dist_check"
+                "10a8120f4644153f",
+                "cec2b2fa5e00a626"
             ]
         ]
     },
     {
-        "id": "gauge_dist",
+        "id": "cec2b2fa5e00a626",
         "type": "ui_gauge",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Distance",
         "group": "grp_sensors",
         "order": 5,
@@ -322,35 +357,40 @@
         ],
         "seg1": 20,
         "seg2": 60,
-        "x": 540,
-        "y": 460,
+        "x": 620,
+        "y": 420,
         "wires": []
     },
     {
-        "id": "fn_dist_check",
+        "id": "10a8120f4644153f",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Distance Alert Check",
-        "func": "var thr = global.get('thr_dist') || 20;\nif (msg.payload < thr) {\n    msg.payload = '⚠️ OBJECT TOO CLOSE: ' + msg.payload.toFixed(1) + ' cm';\n    msg.topic = new Date().toLocaleTimeString();\n    return msg;\n}\nreturn null;",
+        "func": "var thr = global.get('thr_dist') || 20;\nif (msg.payload < thr) {\n    msg.payload = 'OBJECT TOO CLOSE: ' + msg.payload.toFixed(1) + ' cm';\n    msg.topic = new Date().toLocaleTimeString();\n    return msg;\n}\nreturn null;",
         "outputs": 1,
-        "x": 540,
-        "y": 500,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 520,
         "wires": [
             [
-                "fn_alert_handler"
+                "816e98bdca71c100"
             ]
         ]
     },
     {
-        "id": "chart_live",
+        "id": "2f44998d452872de",
         "type": "ui_chart",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Temp & Hum Chart",
         "group": "grp_chart",
         "order": 1,
         "width": "12",
         "height": "4",
-        "label": "Temperature & Humidity",
+        "label": "Temperature & Humidity (Live)",
         "chartType": "line",
         "legend": "true",
         "xformat": "HH:mm:ss",
@@ -367,37 +407,62 @@
             "#3498db"
         ],
         "outputs": 1,
-        "x": 540,
-        "y": 220,
+        "x": 570,
+        "y": 160,
         "wires": [
             []
         ]
     },
     {
-        "id": "fn_alert_handler",
+        "id": "a67dadc0bfc2155b",
         "type": "function",
-        "z": "flow1",
-        "name": "Alert Handler",
-        "func": "// Send to toast banner\nnode.send([msg, msg, msg]);",
-        "outputs": 3,
-        "x": 780,
-        "y": 300,
+        "z": "be797c4777cb20ac",
+        "name": "Green LED Auto Rule",
+        "func": "var temp   = global.get('last_temp');\nvar light  = global.get('last_light');\nvar motion = global.get('last_motion') || false;\nvar dist   = global.get('last_dist');\nvar thr_t  = global.get('thr_temp')   || 30;\nvar thr_l  = global.get('thr_light')  || 2000;\nvar thr_d  = global.get('thr_dist')   || 20;\n\nif (temp === null || temp === undefined) return null;\nif (light === null || light === undefined) light = 9999;\nif (dist === null || dist === undefined) dist = 9999;\n\nvar allOk = (temp <= thr_t) && (light >= thr_l) && !motion && (dist >= thr_d);\nmsg.payload = JSON.stringify({ state: allOk ? 'on' : 'off', color: 'green' });\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 80,
         "wires": [
             [
-                "ui_toast"
-            ],
-            [
-                "fn_log_alert"
-            ],
-            [
-                "fn_telegram"
+                "bd48fe07c03680e1"
             ]
         ]
     },
     {
-        "id": "ui_toast",
+        "id": "816e98bdca71c100",
+        "type": "function",
+        "z": "be797c4777cb20ac",
+        "name": "Alert Handler",
+        "func": "node.send([msg, msg, msg]);",
+        "outputs": 3,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 810,
+        "y": 340,
+        "wires": [
+            [
+                "babf95e6cd0cc35e"
+            ],
+            [
+                "137882aaa892b372"
+            ],
+            [
+                "507b5ddd78867a02"
+            ]
+        ]
+    },
+    {
+        "id": "babf95e6cd0cc35e",
         "type": "ui_toast",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "position": "top right",
         "displayTime": "5",
         "highlight": "",
@@ -407,29 +472,34 @@
         "raw": false,
         "topic": "Alert",
         "name": "Alert Banner",
-        "x": 1000,
-        "y": 220,
+        "x": 1210,
+        "y": 180,
         "wires": []
     },
     {
-        "id": "fn_log_alert",
+        "id": "137882aaa892b372",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Log Alert",
-        "func": "var log = global.get('alert_log') || [];\nlog.unshift({Time: msg.topic || new Date().toLocaleTimeString(), Message: msg.payload});\nif (log.length > 50) log = log.slice(0, 50);\nglobal.set('alert_log', log);\nmsg.payload = log;\nreturn msg;",
+        "func": "var log = global.get('alert_log') || [];\nlog.unshift({ Time: msg.topic || new Date().toLocaleTimeString(), Message: msg.payload });\nif (log.length > 50) log = log.slice(0, 50);\nglobal.set('alert_log', log);\nmsg.payload = log;\nreturn msg;",
         "outputs": 1,
-        "x": 1000,
-        "y": 300,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1120,
+        "y": 280,
         "wires": [
             [
-                "ui_alert_table"
+                "0ce722d667bac38a"
             ]
         ]
     },
     {
-        "id": "ui_alert_table",
+        "id": "0ce722d667bac38a",
         "type": "ui_table",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "group": "grp_alert",
         "name": "Alert History",
         "order": 1,
@@ -459,42 +529,54 @@
         ],
         "outputs": 0,
         "cts": false,
-        "x": 1220,
-        "y": 300,
+        "x": 1390,
+        "y": 280,
         "wires": []
     },
     {
-        "id": "fn_telegram",
+        "id": "507b5ddd78867a02",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Telegram Notify",
-        "func": "var token  = (global.get('tg_token') || '').trim();\nvar chatId = (global.get('tg_chat')  || '').trim();\nif (!token || !chatId) return null;\n\n// 60-second cooldown per alert type\nvar key  = 'tg_cd_' + msg.payload.replace(/[^A-Z]/g,'').substring(0,12);\nvar last = global.get(key) || 0;\nif (Date.now() - last < 60000) return null;\nglobal.set(key, Date.now());\n\nmsg.url     = 'https://api.telegram.org/bot' + token + '/sendMessage';\nmsg.method  = 'POST';\nmsg.headers = {'Content-Type':'application/json'};\nmsg.payload = JSON.stringify({\n    chat_id: chatId,\n    text: 'SmartEnv Alert\n' + msg.payload + '\n' + new Date().toLocaleTimeString()\n});\nreturn msg;",
+        "func": "var token  = (global.get('tg_token') || '').trim();\nvar chatId = (global.get('tg_chat')  || '').trim();\nif (!token || !chatId) return null;\n\n\nvar key  = 'tg_cd_' + msg.payload.replace(/[^A-Z]/g, '').substring(0, 12);\nvar last = global.get(key) || 0;\nif (Date.now() - last < 60000) return null;\nglobal.set(key, Date.now());\n\nmsg.url     = 'https://api.telegram.org/bot' + token + '/sendMessage';\nmsg.method  = 'POST';\nmsg.headers = { 'Content-Type': 'application/json' };\nmsg.payload = JSON.stringify({\n    chat_id: chatId,\n    text: 'SmartEnv Alert\\n' + msg.payload + '\\n' + new Date().toLocaleTimeString()\n});\nreturn msg;",
         "outputs": 1,
-        "x": 1000,
-        "y": 380,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1120,
+        "y": 360,
         "wires": [
             [
-                "http_telegram"
+                "9498909e598cf17d"
             ]
         ]
     },
     {
-        "id": "fn_telegram_test",
+        "id": "d6918923f4711592",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Telegram Test",
-        "func": "var token  = (global.get('tg_token') || '').trim();\nvar chatId = (global.get('tg_chat')  || '').trim();\nif (!token || !chatId) {\n    node.warn('Set Bot Token and Chat ID first');\n    return null;\n}\nmsg.url     = 'https://api.telegram.org/bot' + token + '/sendMessage';\nmsg.method  = 'POST';\nmsg.headers = {'Content-Type':'application/json'};\nmsg.payload = JSON.stringify({\n    chat_id: chatId,\n    text: 'SmartEnv Test\nTelegram is working!\n' + new Date().toLocaleTimeString()\n});\nreturn msg;",
+        "func": "var token  = (global.get('tg_token') || '').trim();\nvar chatId = (global.get('tg_chat')  || '').trim();\nif (!token || !chatId) {\n    node.warn('Set Bot Token and Chat ID first');\n    return null;\n}\nmsg.url     = 'https://api.telegram.org/bot' + token + '/sendMessage';\nmsg.method  = 'POST';\nmsg.headers = { 'Content-Type': 'application/json' };\nmsg.payload = JSON.stringify({\n    chat_id: chatId,\n    text: 'SmartEnv Test\\nTelegram is working!\\n' + new Date().toLocaleTimeString()\n});\nreturn msg;",
         "outputs": 1,
-        "x": 500,
-        "y": 900,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1220,
+        "y": 880,
         "wires": [
-            []
+            [
+                "9498909e598cf17d"
+            ]
         ]
     },
     {
-        "id": "http_telegram",
+        "id": "9498909e598cf17d",
         "type": "http request",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "HTTP Telegram",
         "method": "use",
         "ret": "obj",
@@ -504,16 +586,16 @@
         "persist": false,
         "proxy": "",
         "authType": "",
-        "x": 1220,
-        "y": 380,
+        "x": 1400,
+        "y": 400,
         "wires": [
             []
         ]
     },
     {
-        "id": "ui_tg_token",
+        "id": "5b4ed61502f0bcab",
         "type": "ui_text_input",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Bot Token",
         "label": "Bot Token",
         "tooltip": "From @BotFather on Telegram",
@@ -529,26 +611,33 @@
         "x": 260,
         "y": 820,
         "wires": [
-            []
+            [
+                "71f09cebebcdfc6e"
+            ]
         ]
     },
     {
-        "id": "fn_save_token",
+        "id": "71f09cebebcdfc6e",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Save Token",
-        "func": "var t = (msg.payload||'').trim();\nif (t) global.set('tg_token', t);\nreturn null;",
+        "func": "var t = (msg.payload || '').trim();\nif (t) global.set('tg_token', t);\nreturn null;",
         "outputs": 1,
-        "x": 480,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
         "y": 820,
         "wires": [
             []
         ]
     },
     {
-        "id": "ui_tg_chat",
+        "id": "f60720153c1d9b64",
         "type": "ui_text_input",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Chat ID",
         "label": "Chat ID",
         "tooltip": "From @userinfobot on Telegram",
@@ -562,35 +651,42 @@
         "topic": "",
         "topicType": "str",
         "x": 260,
-        "y": 860,
+        "y": 900,
         "wires": [
-            []
+            [
+                "5dc143cc501a1cf6"
+            ]
         ]
     },
     {
-        "id": "fn_save_chat",
+        "id": "5dc143cc501a1cf6",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Save Chat ID",
-        "func": "var c = (msg.payload||'').trim();\nif (c) global.set('tg_chat', c);\nreturn null;",
+        "func": "var c = (msg.payload || '').trim();\nif (c) global.set('tg_chat', c);\nreturn null;",
         "outputs": 1,
-        "x": 480,
-        "y": 860,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 850,
+        "y": 880,
         "wires": [
             []
         ]
     },
     {
-        "id": "btn_tg_test",
+        "id": "43fc2f28eb3ae394",
         "type": "ui_button",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Test Telegram",
         "group": "grp_telegram",
         "order": 3,
         "width": "3",
         "height": "1",
         "passthru": false,
-        "label": "📤 Send Test",
+        "label": "Send Test",
         "tooltip": "",
         "color": "",
         "bgcolor": "",
@@ -599,250 +695,322 @@
         "payloadType": "str",
         "topic": "",
         "topicType": "str",
-        "x": 260,
-        "y": 900,
+        "x": 1060,
+        "y": 720,
         "wires": [
             [
-                "fn_telegram_test"
+                "d6918923f4711592"
             ]
         ]
     },
     {
-        "id": "ui_tg_help",
-        "type": "ui_template",
-        "z": "flow1",
-        "group": "grp_telegram",
-        "name": "Telegram Help",
-        "order": 4,
-        "width": "12",
-        "height": "2",
-        "format": "<div style=\"padding:8px;background:#f0f4f8;border-radius:4px;font-size:13px;line-height:1.9\">\n  <b>Setup:</b> 1) Search <b>@BotFather</b> on Telegram → /newbot → paste token above &nbsp;\n  2) Search <b>@userinfobot</b> → send any message → paste the Id above &nbsp;\n  3) Start your bot in Telegram &nbsp; 4) Click Send Test\n</div>",
-        "storeOutMessages": false,
-        "fwdInMessages": false,
-        "x": 480,
-        "y": 940,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "sw_red",
+        "id": "5595e0abdd9da227",
         "type": "ui_switch",
-        "z": "flow1",
-        "name": "🔴 Red LED",
-        "label": "🔴 Red LED",
+        "z": "be797c4777cb20ac",
+        "name": "Red LED",
+        "label": "Red LED",
+        "tooltip": "",
         "group": "grp_manual",
         "order": 1,
         "width": "3",
         "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "",
+        "topicType": "str",
         "onvalue": "true",
         "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
         "offvalue": "false",
         "offvalueType": "bool",
-        "x": 120,
-        "y": 620,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "sw_red_fn",
-        "type": "function",
-        "z": "flow1",
-        "name": "🔴 Red LED fn",
-        "func": "msg.payload = JSON.stringify({state: msg.payload?\"on\":\"off\", color:\"red\"});\nreturn msg;",
-        "outputs": 1,
-        "x": 340,
+        "officon": "",
+        "offcolor": "",
+        "animate": true,
+        "className": "",
+        "x": 110,
         "y": 620,
         "wires": [
             [
-                "mo_led"
+                "26297e695970b012"
             ]
         ]
     },
     {
-        "id": "sw_orange",
+        "id": "26297e695970b012",
+        "type": "function",
+        "z": "be797c4777cb20ac",
+        "name": "Red LED fn",
+        "func": "msg.payload = JSON.stringify({ state: msg.payload ? 'on' : 'off', color: 'red' });\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 620,
+        "wires": [
+            [
+                "bd48fe07c03680e1"
+            ]
+        ]
+    },
+    {
+        "id": "2574db3d2e34a51e",
         "type": "ui_switch",
-        "z": "flow1",
-        "name": "🟠 Orange LED",
-        "label": "🟠 Orange LED",
+        "z": "be797c4777cb20ac",
+        "name": "Yellow LED",
+        "label": "Yellow LED",
+        "tooltip": "",
         "group": "grp_manual",
         "order": 2,
         "width": "3",
         "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "",
+        "topicType": "str",
         "onvalue": "true",
         "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
         "offvalue": "false",
         "offvalueType": "bool",
-        "x": 120,
-        "y": 680,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "sw_orange_fn",
-        "type": "function",
-        "z": "flow1",
-        "name": "🟠 Yellow LED fn",
-        "func": "msg.payload = JSON.stringify({state: msg.payload?\"on\":\"off\", color:\"orange\"});\nreturn msg;",
-        "outputs": 1,
-        "x": 340,
+        "officon": "",
+        "offcolor": "",
+        "animate": true,
+        "className": "",
+        "x": 110,
         "y": 680,
         "wires": [
             [
-                "mo_led"
+                "6f9bf57ffca38499"
             ]
         ]
     },
     {
-        "id": "sw_green",
+        "id": "6f9bf57ffca38499",
+        "type": "function",
+        "z": "be797c4777cb20ac",
+        "name": "Yellow LED fn",
+        "func": "msg.payload = JSON.stringify({ state: msg.payload ? 'on' : 'off', color: 'orange' });\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 680,
+        "wires": [
+            [
+                "bd48fe07c03680e1"
+            ]
+        ]
+    },
+    {
+        "id": "62a64fc311128183",
         "type": "ui_switch",
-        "z": "flow1",
-        "name": "🟢 Green LED",
-        "label": "🟢 Green LED",
+        "z": "be797c4777cb20ac",
+        "name": "Green LED",
+        "label": "Green LED",
+        "tooltip": "",
         "group": "grp_manual",
         "order": 3,
         "width": "3",
         "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "",
+        "topicType": "str",
         "onvalue": "true",
         "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
         "offvalue": "false",
         "offvalueType": "bool",
-        "x": 120,
-        "y": 740,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "sw_green_fn",
-        "type": "function",
-        "z": "flow1",
-        "name": "🟢 Green LED fn",
-        "func": "msg.payload = JSON.stringify({state: msg.payload?\"on\":\"off\", color:\"green\"});\nreturn msg;",
-        "outputs": 1,
-        "x": 340,
+        "officon": "",
+        "offcolor": "",
+        "animate": true,
+        "className": "",
+        "x": 110,
         "y": 740,
         "wires": [
             [
-                "mo_led"
+                "8b863bc3d86ab234"
             ]
         ]
     },
     {
-        "id": "mo_led",
+        "id": "8b863bc3d86ab234",
+        "type": "function",
+        "z": "be797c4777cb20ac",
+        "name": "Green LED fn",
+        "func": "msg.payload = JSON.stringify({ state: msg.payload ? 'on' : 'off', color: 'green' });\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 740,
+        "wires": [
+            [
+                "bd48fe07c03680e1"
+            ]
+        ]
+    },
+    {
+        "id": "bd48fe07c03680e1",
         "type": "mqtt out",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Publish LED",
         "topic": "actuators/led",
         "qos": "0",
         "retain": "",
         "broker": "broker1",
-        "x": 580,
-        "y": 680,
+        "x": 1010,
+        "y": 600,
         "wires": []
     },
     {
-        "id": "sw_buzzer",
+        "id": "9a2e5073d83ddd3a",
         "type": "ui_switch",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Buzzer",
         "label": "Buzzer",
+        "tooltip": "",
         "group": "grp_manual",
         "order": 4,
         "width": "3",
         "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "",
+        "topicType": "str",
         "onvalue": "true",
         "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
         "offvalue": "false",
         "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "animate": true,
+        "className": "",
         "x": 120,
         "y": 800,
         "wires": [
-            []
-        ]
-    },
-    {
-        "id": "fn_buzzer",
-        "type": "function",
-        "z": "flow1",
-        "name": "Buzzer fn",
-        "func": "msg.payload = JSON.stringify({state: msg.payload?\"on\":\"off\", duration:2000});\nreturn msg;",
-        "outputs": 1,
-        "x": 340,
-        "y": 800,
-        "wires": [
             [
-                "mo_buzzer"
+                "5c7a5c41f6caae94"
             ]
         ]
     },
     {
-        "id": "mo_buzzer",
+        "id": "5c7a5c41f6caae94",
+        "type": "function",
+        "z": "be797c4777cb20ac",
+        "name": "Buzzer fn",
+        "func": "msg.payload = JSON.stringify({ state: msg.payload ? 'on' : 'off', duration: 2000 });\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 780,
+        "wires": [
+            [
+                "5bdc14e6cd8c36d1"
+            ]
+        ]
+    },
+    {
+        "id": "5bdc14e6cd8c36d1",
         "type": "mqtt out",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Publish Buzzer",
         "topic": "actuators/buzzer",
         "qos": "0",
         "retain": "",
         "broker": "broker1",
-        "x": 580,
-        "y": 800,
+        "x": 680,
+        "y": 760,
         "wires": []
     },
     {
-        "id": "sw_relay",
+        "id": "0e5396187f18f686",
         "type": "ui_switch",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Relay",
         "label": "Relay",
+        "tooltip": "",
         "group": "grp_manual",
         "order": 5,
         "width": "3",
         "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "",
+        "topicType": "str",
         "onvalue": "true",
         "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
         "offvalue": "false",
         "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "animate": true,
+        "className": "",
         "x": 120,
         "y": 860,
         "wires": [
-            []
-        ]
-    },
-    {
-        "id": "fn_relay",
-        "type": "function",
-        "z": "flow1",
-        "name": "Relay fn",
-        "func": "msg.payload = JSON.stringify({state: msg.payload?\"on\":\"off\"});\nreturn msg;",
-        "outputs": 1,
-        "x": 340,
-        "y": 860,
-        "wires": [
             [
-                "mo_relay"
+                "c34d11dea90560e6"
             ]
         ]
     },
     {
-        "id": "mo_relay",
+        "id": "c34d11dea90560e6",
+        "type": "function",
+        "z": "be797c4777cb20ac",
+        "name": "Relay fn",
+        "func": "msg.payload = JSON.stringify({ state: msg.payload ? 'on' : 'off' });\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 440,
+        "y": 860,
+        "wires": [
+            [
+                "c94e148c33168030"
+            ]
+        ]
+    },
+    {
+        "id": "c94e148c33168030",
         "type": "mqtt out",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Publish Relay",
         "topic": "actuators/relay",
         "qos": "0",
         "retain": "",
         "broker": "broker1",
-        "x": 580,
-        "y": 860,
+        "x": 880,
+        "y": 820,
         "wires": []
     },
     {
-        "id": "sl_servo",
+        "id": "2b716f44e7348da1",
         "type": "ui_slider",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Servo Angle",
         "label": "Servo Angle (0–180°)",
         "tooltip": "",
@@ -850,37 +1018,45 @@
         "order": 6,
         "width": "6",
         "height": "1",
+        "passthru": true,
         "outs": "all",
+        "topic": "",
+        "topicType": "str",
         "min": 0,
         "max": 180,
         "step": 1,
-        "x": 120,
-        "y": 920,
+        "x": 110,
+        "y": 940,
         "wires": [
             [
-                "fn_servo"
+                "9e58ec07e19f4959"
             ]
         ]
     },
     {
-        "id": "fn_servo",
+        "id": "9e58ec07e19f4959",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Servo fn",
-        "func": "msg.payload = JSON.stringify({angle: msg.payload});\nreturn msg;",
+        "func": "msg.payload = JSON.stringify({ angle: msg.payload });\nreturn msg;",
         "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 340,
-        "y": 920,
+        "y": 960,
         "wires": [
             [
-                "mo_servo"
+                "0d681c4462eb2671"
             ]
         ]
     },
     {
-        "id": "mo_servo",
+        "id": "0d681c4462eb2671",
         "type": "mqtt out",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Publish Servo",
         "topic": "actuators/servo",
         "qos": "0",
@@ -891,48 +1067,57 @@
         "wires": []
     },
     {
-        "id": "num_temp",
+        "id": "d906e5a6bad74eb7",
         "type": "ui_numeric",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Temp Max",
-        "label": "🌡 Temp Max (°C)",
+        "label": "Temp Max (°C)",
         "tooltip": "Default: 30",
         "group": "grp_thresh",
         "order": 1,
         "width": "4",
         "height": "1",
         "wrap": false,
+        "passthru": true,
+        "topic": "",
+        "topicType": "str",
         "format": "{{value}}",
         "min": 0,
         "max": 60,
         "step": 1,
+        "className": "",
         "x": 120,
         "y": 1020,
         "wires": [
             [
-                "fn_thr_temp"
+                "3bf578361ec43fdc"
             ]
         ]
     },
     {
-        "id": "fn_thr_temp",
+        "id": "3bf578361ec43fdc",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Save Temp Thr",
         "func": "global.set('thr_temp', msg.payload);\nmsg.payload = JSON.stringify({\n    temp_max:  msg.payload,\n    light_min: global.get('thr_light') || 2000,\n    dist_min:  global.get('thr_dist')  || 20\n});\nreturn msg;",
         "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 360,
         "y": 1020,
         "wires": [
             [
-                "mo_thresh"
+                "97262314ea9910a7"
             ]
         ]
     },
     {
-        "id": "num_light",
+        "id": "5286cf86952d2b76",
         "type": "ui_numeric",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Light Min",
         "label": "Light Min (raw)",
         "tooltip": "Default: 2000",
@@ -941,37 +1126,46 @@
         "width": "4",
         "height": "1",
         "wrap": false,
+        "passthru": true,
+        "topic": "",
+        "topicType": "str",
         "format": "{{value}}",
         "min": 0,
         "max": 4095,
         "step": 50,
+        "className": "",
         "x": 120,
         "y": 1080,
         "wires": [
             [
-                "fn_thr_light"
+                "bad3309f3982fbf4"
             ]
         ]
     },
     {
-        "id": "fn_thr_light",
+        "id": "bad3309f3982fbf4",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Save Light Thr",
-        "func": "global.set('thr_light', msg.payload);\nmsg.payload = JSON.stringify({\n    temp_max:  global.get('thr_temp') || 30,\n    light_min: msg.payload,\n    dist_min:  global.get('thr_dist') || 20\n});\nreturn msg;",
+        "func": "global.set('thr_light', msg.payload);\nmsg.payload = JSON.stringify({\n    temp_max:  global.get('thr_temp')  || 30,\n    light_min: msg.payload,\n    dist_min:  global.get('thr_dist')  || 20\n});\nreturn msg;",
         "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 360,
         "y": 1080,
         "wires": [
             [
-                "mo_thresh"
+                "97262314ea9910a7"
             ]
         ]
     },
     {
-        "id": "num_dist",
+        "id": "c7a2b923463eece8",
         "type": "ui_numeric",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Dist Min",
         "label": "Distance Min (cm)",
         "tooltip": "Default: 20",
@@ -980,6 +1174,9 @@
         "width": "4",
         "height": "1",
         "wrap": false,
+        "passthru": true,
+        "topic": "",
+        "topicType": "str",
         "format": "{{value}}",
         "min": 1,
         "max": 200,
@@ -988,29 +1185,34 @@
         "y": 1140,
         "wires": [
             [
-                "fn_thr_dist"
+                "b4039b5d6077ded2"
             ]
         ]
     },
     {
-        "id": "fn_thr_dist",
+        "id": "b4039b5d6077ded2",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Save Dist Thr",
         "func": "global.set('thr_dist', msg.payload);\nmsg.payload = JSON.stringify({\n    temp_max:  global.get('thr_temp')  || 30,\n    light_min: global.get('thr_light') || 2000,\n    dist_min:  msg.payload\n});\nreturn msg;",
         "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 360,
         "y": 1140,
         "wires": [
             [
-                "mo_thresh"
+                "97262314ea9910a7"
             ]
         ]
     },
     {
-        "id": "mo_thresh",
+        "id": "97262314ea9910a7",
         "type": "mqtt out",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Publish Thresholds",
         "topic": "config/thresholds",
         "qos": "0",
@@ -1021,9 +1223,70 @@
         "wires": []
     },
     {
-        "id": "mi_status",
+        "id": "92c970904eaed6ea",
+        "type": "ui_numeric",
+        "z": "be797c4777cb20ac",
+        "name": "Report Interval",
+        "label": "Report Interval (ms)",
+        "tooltip": "Default: 2000  Min: 500",
+        "group": "grp_thresh",
+        "order": 4,
+        "width": "4",
+        "height": "1",
+        "wrap": false,
+        "passthru": true,
+        "topic": "",
+        "topicType": "str",
+        "format": "{{value}}",
+        "min": 500,
+        "max": 10000,
+        "step": 500,
+        "className": "",
+        "x": 120,
+        "y": 1200,
+        "wires": [
+            [
+                "4dfab52a0d7fc190"
+            ]
+        ]
+    },
+    {
+        "id": "4dfab52a0d7fc190",
+        "type": "function",
+        "z": "be797c4777cb20ac",
+        "name": "Publish Interval",
+        "func": "msg.payload = JSON.stringify({ value: msg.payload });\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 1200,
+        "wires": [
+            [
+                "f2c6cb692177775a"
+            ]
+        ]
+    },
+    {
+        "id": "f2c6cb692177775a",
+        "type": "mqtt out",
+        "z": "be797c4777cb20ac",
+        "name": "Publish Interval",
+        "topic": "config/interval",
+        "qos": "0",
+        "retain": "true",
+        "broker": "broker1",
+        "x": 620,
+        "y": 1200,
+        "wires": []
+    },
+    {
+        "id": "a4dc9277d2486e78",
         "type": "mqtt in",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "sub system/status",
         "topic": "system/status",
         "qos": "0",
@@ -1031,33 +1294,38 @@
         "broker": "broker1",
         "inputs": 0,
         "x": 100,
-        "y": 1240,
+        "y": 1320,
         "wires": [
             [
-                "fn_status",
-                "fn_wd_reset"
+                "7327b0e7bf85b36a",
+                "b880d5a208d54eab"
             ]
         ]
     },
     {
-        "id": "fn_status",
+        "id": "7327b0e7bf85b36a",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Format Status",
         "func": "try {\n    var d = JSON.parse(msg.payload);\n    msg.payload = 'Uptime: ' + d.uptime + 's   |   RSSI: ' + d.rssi + ' dBm   |   Free Heap: ' + d.free_memory + ' bytes';\n    return msg;\n} catch(e) { return null; }",
         "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 340,
-        "y": 1220,
+        "y": 1300,
         "wires": [
             [
-                "ui_esp32_status"
+                "f06ef8c22d993b38"
             ]
         ]
     },
     {
-        "id": "ui_esp32_status",
+        "id": "f06ef8c22d993b38",
         "type": "ui_text",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "group": "grp_status",
         "order": 1,
         "width": "12",
@@ -1066,27 +1334,32 @@
         "label": "ESP32",
         "format": "{{msg.payload}}",
         "layout": "row-spread",
-        "x": 580,
-        "y": 1220,
+        "x": 600,
+        "y": 1300,
         "wires": []
     },
     {
-        "id": "fn_wd_reset",
+        "id": "b880d5a208d54eab",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Reset Watchdog",
         "func": "global.set('last_heartbeat', Date.now());\nreturn null;",
         "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 340,
-        "y": 1280,
+        "y": 1360,
         "wires": [
             []
         ]
     },
     {
-        "id": "inj_wd",
+        "id": "e473fe4061d939bd",
         "type": "inject",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Check Every 5s",
         "repeat": "5",
         "crontab": "",
@@ -1096,32 +1369,37 @@
         "payload": "",
         "payloadType": "date",
         "x": 100,
-        "y": 1340,
+        "y": 1420,
         "wires": [
             [
-                "fn_watchdog"
+                "19680250c51e898e"
             ]
         ]
     },
     {
-        "id": "fn_watchdog",
+        "id": "19680250c51e898e",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Watchdog Check",
-        "func": "var last = global.get('last_heartbeat') || 0;\nvar diff = Date.now() - last;\nif (last === 0) {\n    msg.payload = 'Waiting for ESP32...';\n} else if (diff > 30000) {\n    msg.payload = 'ESP32 OFFLINE — No heartbeat for ' + Math.round(diff/1000) + 's';\n} else {\n    msg.payload = 'ESP32 Online — Last seen ' + Math.round(diff/1000) + 's ago';\n}\nreturn msg;",
+        "func": "var last = global.get('last_heartbeat') || 0;\nvar diff = Date.now() - last;\nif (last === 0) {\n    msg.payload = 'Waiting for ESP32...';\n} else if (diff > 30000) {\n    msg.payload = 'ESP32 OFFLINE — No heartbeat for ' + Math.round(diff / 1000) + 's';\n} else {\n    msg.payload = 'ESP32 Online — Last seen ' + Math.round(diff / 1000) + 's ago';\n}\nreturn msg;",
         "outputs": 1,
-        "x": 320,
-        "y": 1340,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 1420,
         "wires": [
             [
-                "ui_connection"
+                "dffdd4f8eec3dfc7"
             ]
         ]
     },
     {
-        "id": "ui_connection",
+        "id": "dffdd4f8eec3dfc7",
         "type": "ui_text",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "group": "grp_status",
         "order": 2,
         "width": "12",
@@ -1130,105 +1408,120 @@
         "label": "Connection",
         "format": "{{msg.payload}}",
         "layout": "row-spread",
-        "x": 560,
-        "y": 1340,
+        "x": 600,
+        "y": 1420,
         "wires": []
     },
     {
-        "id": "inj_startup",
+        "id": "8c3c772e17de09f3",
         "type": "inject",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Startup Init",
         "repeat": "",
         "crontab": "",
         "once": true,
-        "onceDelay": 0.3,
+        "onceDelay": 0.5,
         "topic": "",
         "payload": "",
         "payloadType": "date",
         "x": 100,
-        "y": 1400,
+        "y": 1480,
         "wires": [
             [
-                "fn_startup"
+                "21868d5a55481e9f"
             ]
         ]
     },
     {
-        "id": "fn_startup",
+        "id": "21868d5a55481e9f",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Init Status Text",
-        "func": "node.send([\n    {payload: 'Waiting for ESP32 heartbeat...'},\n    {payload: 'Waiting for ESP32...'}\n]);",
+        "func": "node.send([\n    { payload: 'Waiting for ESP32 heartbeat...' },\n    { payload: 'Waiting for ESP32...' }\n]);",
         "outputs": 2,
-        "x": 320,
-        "y": 1400,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 1480,
         "wires": [
             [
-                "ui_esp32_status"
+                "f06ef8c22d993b38"
             ],
             [
-                "ui_connection"
+                "dffdd4f8eec3dfc7"
             ]
         ]
     },
     {
-        "id": "inj_log",
+        "id": "2ce92e90c9534fde",
         "type": "inject",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Log Every 30s",
         "repeat": "30",
         "crontab": "",
         "once": true,
-        "onceDelay": 2,
+        "onceDelay": 0.5,
         "topic": "",
         "payload": "",
         "payloadType": "date",
         "x": 100,
-        "y": 1500,
+        "y": 1580,
         "wires": [
             [
-                "fn_log"
+                "d37f4f23a897e3b7"
             ]
         ]
     },
     {
-        "id": "fn_log",
+        "id": "d37f4f23a897e3b7",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Append Log",
-        "func": "var log = global.get('sensor_log') || [];\nvar isNew = log.length === 0;\nvar entry = {\n    ts:     Date.now(),\n    time:   new Date().toISOString(),\n    temp:   global.get('last_temp')   || 0,\n    hum:    global.get('last_hum')    || 0,\n    light:  global.get('last_light')  || 0,\n    motion: global.get('last_motion') || false,\n    dist:   global.get('last_dist')   || 0\n};\nlog.push(entry);\nlog = log.filter(function(r){ return r.ts > Date.now() - 86400000; });\nglobal.set('sensor_log', log);\n\nvar row = entry.time+','+entry.temp+','+entry.hum+','+entry.light+','+entry.motion+','+entry.dist+'\\n';\nif (isNew) {\n    msg.payload  = 'Timestamp,Temp_C,Humidity_pct,Light_raw,Motion,Distance_cm\\n' + row;\n    msg.overwrite = true;\n} else {\n    msg.payload   = row;\n    msg.overwrite = false;\n}\nreturn msg;",
+        "func": "var log   = global.get('sensor_log') || [];\nvar isNew = log.length === 0;\nvar entry = {\n    ts:     Date.now(),\n    time:   new Date().toISOString(),\n    temp:   global.get('last_temp')   || 0,\n    hum:    global.get('last_hum')    || 0,\n    light:  global.get('last_light')  || 0,\n    motion: global.get('last_motion') || false,\n    dist:   global.get('last_dist')   || 0\n};\nlog.push(entry);\n\nlog = log.filter(function(r) { return r.ts > Date.now() - 86400000; });\nglobal.set('sensor_log', log);\n\nvar row = entry.time + ',' + entry.temp + ',' + entry.hum + ',' +\n          entry.light + ',' + entry.motion + ',' + entry.dist + '\\n';\nif (isNew) {\n    msg.payload  = 'Timestamp,Temp_C,Humidity_pct,Light_raw,Motion,Distance_cm\\n' + row;\n    msg.overwrite = true;\n} else {\n    msg.payload   = row;\n    msg.overwrite = false;\n}\nreturn msg;",
         "outputs": 1,
-        "x": 320,
-        "y": 1500,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 1580,
         "wires": [
             [
-                "fn_csv_route"
+                "6945b4e6de91c075"
             ]
         ]
     },
     {
-        "id": "fn_csv_route",
+        "id": "6945b4e6de91c075",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "CSV Route",
-        "func": "if (msg.overwrite) { node.send([msg, null]); }\nelse              { node.send([null, msg]); }",
+        "func": "if (msg.overwrite) { node.send([msg, null]); }\nelse               { node.send([null, msg]); }",
         "outputs": 2,
-        "x": 540,
-        "y": 1500,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 1580,
         "wires": [
             [
-                "file_new"
+                "7c3ed754d8a48ce3"
             ],
             [
-                "file_append"
+                "f16b3242a77e5fc1"
             ]
         ]
     },
     {
-        "id": "file_new",
+        "id": "7c3ed754d8a48ce3",
         "type": "file",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "CSV New File",
         "filename": "/tmp/smartenv.csv",
         "filenameType": "str",
@@ -1236,16 +1529,16 @@
         "createDir": true,
         "overwriteFile": "true",
         "encoding": "none",
-        "x": 760,
-        "y": 1460,
+        "x": 820,
+        "y": 1540,
         "wires": [
             []
         ]
     },
     {
-        "id": "file_append",
+        "id": "f16b3242a77e5fc1",
         "type": "file",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "CSV Append",
         "filename": "/tmp/smartenv.csv",
         "filenameType": "str",
@@ -1253,59 +1546,64 @@
         "createDir": true,
         "overwriteFile": "false",
         "encoding": "none",
-        "x": 760,
-        "y": 1540,
+        "x": 820,
+        "y": 1620,
         "wires": [
             []
         ]
     },
     {
-        "id": "http_in",
+        "id": "66a77c68905bf939",
         "type": "http in",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "GET /download-csv",
         "url": "/download-csv",
         "method": "get",
         "upload": false,
         "swaggerDoc": "",
         "x": 100,
-        "y": 1620,
+        "y": 1700,
         "wires": [
             [
-                "fn_csv_dl"
+                "1024abe623659786"
             ]
         ]
     },
     {
-        "id": "fn_csv_dl",
+        "id": "1024abe623659786",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Build CSV Download",
-        "func": "var hours  = parseInt(msg.req.query.hours) || 24;\nvar cutoff = Date.now() - hours * 3600000;\nvar log    = global.get('sensor_log') || [];\nvar rows   = log.filter(function(r){ return r.ts >= cutoff; });\nvar csv    = 'Timestamp,Temp_C,Humidity_pct,Light_raw,Motion,Distance_cm\\n';\nrows.forEach(function(r){\n    csv += r.time+','+r.temp+','+r.hum+','+r.light+','+r.motion+','+r.dist+'\\n';\n});\nmsg.payload = csv;\nmsg.headers = {\n    'Content-Type': 'text/csv',\n    'Content-Disposition': 'attachment; filename=\"smartenv_'+hours+'h.csv\"'\n};\nreturn msg;",
+        "func": "var hours  = parseInt(msg.req.query.hours) || 24;\nvar cutoff = Date.now() - hours * 3600000;\nvar log    = global.get('sensor_log') || [];\nvar rows   = log.filter(function(r) { return r.ts >= cutoff; });\nvar csv    = 'Timestamp,Temp_C,Humidity_pct,Light_raw,Motion,Distance_cm\\n';\nrows.forEach(function(r) {\n    csv += r.time + ',' + r.temp + ',' + r.hum + ',' +\n           r.light + ',' + r.motion + ',' + r.dist + '\\n';\n});\nmsg.payload = csv;\nmsg.headers = {\n    'Content-Type': 'text/csv',\n    'Content-Disposition': 'attachment; filename=\"smartenv_' + hours + 'h.csv\"'\n};\nreturn msg;",
         "outputs": 1,
-        "x": 340,
-        "y": 1620,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 1700,
         "wires": [
             [
-                "http_out"
+                "273350f34c866e29"
             ]
         ]
     },
     {
-        "id": "http_out",
+        "id": "273350f34c866e29",
         "type": "http response",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "HTTP Response",
         "statusCode": "",
         "headers": {},
-        "x": 560,
-        "y": 1620,
+        "x": 600,
+        "y": 1700,
         "wires": []
     },
     {
-        "id": "btn_1h",
+        "id": "fd86163700daa4f4",
         "type": "ui_button",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Last 1h",
         "group": "grp_history",
         "order": 1,
@@ -1321,18 +1619,18 @@
         "payloadType": "num",
         "topic": "",
         "topicType": "str",
-        "x": 120,
-        "y": 1720,
+        "x": 1020,
+        "y": 1240,
         "wires": [
             [
-                "fn_history"
+                "6b6f1135962d16f1"
             ]
         ]
     },
     {
-        "id": "btn_6h",
+        "id": "d0298f70caf8e5de",
         "type": "ui_button",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Last 6h",
         "group": "grp_history",
         "order": 2,
@@ -1348,18 +1646,18 @@
         "payloadType": "num",
         "topic": "",
         "topicType": "str",
-        "x": 120,
-        "y": 1780,
+        "x": 960,
+        "y": 1340,
         "wires": [
             [
-                "fn_history"
+                "6b6f1135962d16f1"
             ]
         ]
     },
     {
-        "id": "btn_24h",
+        "id": "901067f34752bb4f",
         "type": "ui_button",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Last 24h",
         "group": "grp_history",
         "order": 3,
@@ -1375,33 +1673,38 @@
         "payloadType": "num",
         "topic": "",
         "topicType": "str",
-        "x": 120,
-        "y": 1840,
+        "x": 960,
+        "y": 1400,
         "wires": [
             [
-                "fn_history"
+                "6b6f1135962d16f1"
             ]
         ]
     },
     {
-        "id": "fn_history",
+        "id": "6b6f1135962d16f1",
         "type": "function",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Filter History",
-        "func": "var hours  = parseInt(msg.payload) || 1;\nvar cutoff = Date.now() - hours * 3600000;\nvar log    = global.get('sensor_log') || [];\nvar rows   = log.filter(function(r){ return r.ts >= cutoff; });\n// Clear chart first\nnode.send({payload:[], topic:'Temperature'});\nnode.send({payload:[], topic:'Humidity'});\n// Send each point\nrows.forEach(function(r){\n    node.send({payload: r.temp, topic:'Temperature', x: r.ts});\n});\nrows.forEach(function(r){\n    node.send({payload: r.hum,  topic:'Humidity',    x: r.ts});\n});\nreturn null;",
+        "func": "var hours  = parseInt(msg.payload) || 1;\nvar cutoff = Date.now() - hours * 3600000;\nvar log    = global.get('sensor_log') || [];\nvar rows   = log.filter(function(r) { return r.ts >= cutoff; });\n\nnode.send({ payload: [], topic: 'Temperature' });\nnode.send({ payload: [], topic: 'Humidity' });\n\nrows.forEach(function(r) {\n    node.send({ payload: r.temp, topic: 'Temperature', x: r.ts });\n});\nrows.forEach(function(r) {\n    node.send({ payload: r.hum,  topic: 'Humidity',    x: r.ts });\n});\nreturn null;",
         "outputs": 1,
-        "x": 360,
-        "y": 1780,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1270,
+        "y": 1300,
         "wires": [
             [
-                "chart_history"
+                "c3834567a881aa93"
             ]
         ]
     },
     {
-        "id": "chart_history",
+        "id": "c3834567a881aa93",
         "type": "ui_chart",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "name": "Historical Chart",
         "group": "grp_history",
         "order": 4,
@@ -1424,26 +1727,26 @@
             "#3498db"
         ],
         "outputs": 1,
-        "x": 600,
-        "y": 1780,
+        "x": 1480,
+        "y": 1300,
         "wires": [
             []
         ]
     },
     {
-        "id": "ui_csv_links",
+        "id": "71352bfe09ad9baf",
         "type": "ui_template",
-        "z": "flow1",
+        "z": "be797c4777cb20ac",
         "group": "grp_history",
         "name": "Download Links",
         "order": 5,
         "width": "12",
         "height": "1",
-        "format": "<div style=\"display:flex;gap:8px;padding:4px 0\">\n  <a href=\"/download-csv?hours=1\"  target=\"_blank\" style=\"flex:1;display:block;background:#1976D2;color:#fff;text-align:center;padding:8px;border-radius:4px;text-decoration:none;font-weight:500;font-size:13px\">⬇ Last 1h CSV</a>\n  <a href=\"/download-csv?hours=6\"  target=\"_blank\" style=\"flex:1;display:block;background:#1976D2;color:#fff;text-align:center;padding:8px;border-radius:4px;text-decoration:none;font-weight:500;font-size:13px\">⬇ Last 6h CSV</a>\n  <a href=\"/download-csv?hours=24\" target=\"_blank\" style=\"flex:1;display:block;background:#1976D2;color:#fff;text-align:center;padding:8px;border-radius:4px;text-decoration:none;font-weight:500;font-size:13px\">⬇ Last 24h CSV</a>\n</div>",
+        "format": "<div style=\"display:flex;gap:8px;padding:4px 0\"><a href=\"/download-csv?hours=1\" target=\"_blank\" style=\"flex:1;display:block;background:#1976D2;color:#fff;text-align:center;padding:8px;border-radius:4px;text-decoration:none;font-weight:500;font-size:13px\">⬇ Last 1h CSV</a><a href=\"/download-csv?hours=6\" target=\"_blank\" style=\"flex:1;display:block;background:#1976D2;color:#fff;text-align:center;padding:8px;border-radius:4px;text-decoration:none;font-weight:500;font-size:13px\">⬇ Last 6h CSV</a><a href=\"/download-csv?hours=24\" target=\"_blank\" style=\"flex:1;display:block;background:#1976D2;color:#fff;text-align:center;padding:8px;border-radius:4px;text-decoration:none;font-weight:500;font-size:13px\">⬇ Last 24h CSV</a></div>",
         "storeOutMessages": false,
         "fwdInMessages": false,
-        "x": 600,
-        "y": 1860,
+        "x": 1280,
+        "y": 1380,
         "wires": [
             []
         ]
@@ -1550,7 +1853,7 @@
     {
         "id": "tab_dash",
         "type": "ui_tab",
-        "name": "Dashboard",
+        "name": " Dashboard ",
         "icon": "dashboard",
         "order": 1,
         "disabled": false,
@@ -1559,40 +1862,50 @@
     {
         "id": "tab_main",
         "type": "ui_tab",
-        "name": "Dashboard",
+        "name": "Dashboard Live",
         "icon": "dashboard",
-        "order": 1
+        "order": 1,
+        "disabled": false,
+        "hidden": false
     },
     {
         "id": "tab_alerts",
         "type": "ui_tab",
         "name": "Alerts",
         "icon": "warning",
-        "order": 3
+        "order": 3,
+        "disabled": false,
+        "hidden": false
     },
     {
         "id": "tab_data",
         "type": "ui_tab",
         "name": "Data & Notifications",
         "icon": "storage",
-        "order": 5
+        "order": 5,
+        "disabled": false,
+        "hidden": false
     },
     {
         "id": "tab_control",
         "type": "ui_tab",
         "name": "Control",
         "icon": "settings",
-        "order": 2
+        "order": 2,
+        "disabled": false,
+        "hidden": false
     },
     {
         "id": "tab_status",
         "type": "ui_tab",
         "name": "Status",
         "icon": "wifi",
-        "order": 4
+        "order": 4,
+        "disabled": false,
+        "hidden": false
     },
     {
-        "id": "3bba5df8644635af",
+        "id": "a1979024e0b08682",
         "type": "global-config",
         "env": [],
         "modules": {
