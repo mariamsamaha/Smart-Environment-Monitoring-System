@@ -1,12 +1,5 @@
 # Smart Environment Monitoring & Control System
 
-**Course:** SWAPD 453 — IoT Applications Development  
-**Semester:** Spring 2026  
-**Instructor:** Eslam El Hefny  
-**Platform:** ESP32 + Node-RED + MQTT + Wokwi
-
----
-
 ## What This Project Does
 
 We built a system that watches a room and responds to what it finds. Temperature, humidity, light level, motion, and distance are all read by an ESP32 every two seconds and sent over Wi-Fi to a Node-RED dashboard. The dashboard displays everything live, triggers alerts when something is out of range, and lets you override any actuator manually from your browser.
