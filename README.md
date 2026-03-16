@@ -13,9 +13,9 @@ The whole thing runs on the HiveMQ public MQTT broker, which means the Wokwi sim
 ```
 TeamName_SmartEnv/
 ├── esp32_code/
-│   └── smart_env.ino          # Arduino sketch — sensors, MQTT, auto-control
+│   └── esp32_main.ino          # Arduino sketch — sensors, MQTT, auto-control
 ├── nodered_flow/
-│   └── flow.json              # Node-RED exported flow (98 nodes, F1–F10)
+│   └── flows.json              # Node-RED exported flow (98 nodes, F1–F10)
 ├── diagrams/
 │   └── wiring.png             # Full wiring diagram from Wokwi
 ├── screenshots/
