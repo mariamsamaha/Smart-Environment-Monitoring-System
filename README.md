@@ -183,4 +183,4 @@ Connected all sensors and actuators to the ESP32 according to the pin mapping ab
 Implemented the 2-second sensor reading cycle using millis() (not delay(), which would block MQTT). Added automatic actuator rules based on configurable thresholds. Verified all sensor outputs through the Node-RED debug panel before building the dashboard.
 
 ### Phase 3 — Node-RED Dashboard & MQTT Integration
-Built the full dashboard with gauges, charts, manual controls, alert system, data logging, and watchdog. All function nodes were audited to confirm correct wiring — a programmatic JSON check caught several disconnected gauge and switch nodes that appeared correct visually but had empty wires arrays.
+Built the full dashboard with gauges, charts, manual controls, alert system, data logging, and watchdog. All function nodes were audited to confirm correct wiring.
