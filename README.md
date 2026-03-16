@@ -2,7 +2,7 @@
 
 ## What This Project Does
 
-We built a system that watches a room and responds to what it finds. Temperature, humidity, light level, motion, and distance are all read by an ESP32 every two seconds and sent over Wi-Fi to a Node-RED dashboard. The dashboard displays everything live, triggers alerts when something is out of range, and lets you override any actuator manually from your browser.
+Built a system that watches a room and responds to what it finds. Temperature, humidity, light level, motion, and distance are all read by an ESP32 every two seconds and sent over Wi-Fi to a Node-RED dashboard. The dashboard displays everything live, triggers alerts when something is out of range, and lets you override any actuator manually from your browser.
 
 The whole thing runs on the HiveMQ public MQTT broker, which means the Wokwi simulator and Node-RED can talk to each other without any local network configuration.
 
@@ -184,11 +184,3 @@ Implemented the 2-second sensor reading cycle using millis() (not delay(), which
 
 ### Phase 3 — Node-RED Dashboard & MQTT Integration
 Built the full dashboard with gauges, charts, manual controls, alert system, data logging, and watchdog. All function nodes were audited to confirm correct wiring — a programmatic JSON check caught several disconnected gauge and switch nodes that appeared correct visually but had empty wires arrays.
-
----
-
-## Known Limitations
-
-- The system uses a public MQTT broker (HiveMQ). Any device that knows the topic names can publish or subscribe. For production use, replace with a local Mosquitto broker with authentication.
-- CSV data is stored in Node-RED process memory and written to `/tmp/smartenv.csv`. Restarting Node-RED clears the in-memory log (the file remains).
-- The Telegram cooldown key is derived from the alert message text. Very similar alert messages may share a cooldown bucket, reducing notification frequency slightly.
